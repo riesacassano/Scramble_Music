@@ -2,7 +2,7 @@ Experiment 3 (Event Segmentation) readme
 
 This folder contains the processed data and scripts needed to generate figures 3 and 4 and E3 results.
 
-Note: Data and scripts for the pitch and rhythm control analysis has its own readme (`Pitch_Rhythm_Control/`).
+Note: Data and scripts for the pitch and rhythm control analysis has its own readme (`pitch_rhythm_control_analysis/`).
 
 
 Data:
