@@ -29,5 +29,3 @@ If you want to skip the alignment computation and just generate figure 4, `E3_fi
 `E3_alignment.Rmd` takes `alignment.csv` and runs non-parametric ANOVA and post-hoc tests (Tables S2-S5).
 
 Each of the notebooks is knit into a PDF version if you want to see the code but not run it. Those files are `E3_rate.pdf`, `E3_compute_precision_sensitivity.pdf`, and `E3_alignment.pdf`.
-
-~ RYCC 10-31-24

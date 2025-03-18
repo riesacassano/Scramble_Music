@@ -10,9 +10,6 @@ Data:
 
 Scripts:
 
-`analysis.R` takes `data.xlsx` and generates figures 2A (memory), 2B (prediction), 5 (categorization) and ANOVA results.
+`analysis.R` takes `data.xlsx` and generates figures 2A (memory), 2B (prediction), 5 (categorization), S1, and ANOVA results.
 
 `confusion_matrix.R` generates figure 6 (confusion matrices).
-
-
-~ RYCC 11-13-24, on behalf of S. Izen

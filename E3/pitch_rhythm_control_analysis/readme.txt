@@ -11,5 +11,3 @@ The `By_Stimulus` folder includes one subfolder for each condition. Each subfold
 Notebook:
 
 `pitch_and_rhythm.Rmd` use linear models with absolute pitch change, absolute rhythm change, and their interaction to predict number of participants responding separately for each condition and group (musicians vs non-musicians). There's more that one could do with this data - this is bare bones!
-
-~ RYCC 10-17-24
