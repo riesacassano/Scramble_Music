@@ -1,4 +1,4 @@
-Experiment 3 readme
+Experiment 3 (Event Segmentation) readme
 
 This folder contains the processed data and scripts needed to generate figures 3 and 4 and E3 results.
 

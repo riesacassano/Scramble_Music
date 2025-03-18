@@ -1,6 +1,6 @@
-Experiments 1,2,4 readme
+Experiments 1 (Memory), 2 (Prediction), 4 (Categorization) readme
 
-This folder contains the processed data and scripts needed to generate figures 2, 5, and 6 and E1, E2, and E4 results.
+This folder contains the processed data and scripts needed to generate figures 2, 5, 6, and S1 and E1, E2, and E4 results.
 
 Data:
 
