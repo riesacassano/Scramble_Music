@@ -1,0 +1,231 @@
+---
+title: "Alignment"
+author: "Riesa Y. Cassano-Coleman"
+date: "`r Sys.Date()`"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE)
+```
+
+```{r libraries}
+library(tidyverse) # version 2.0.0
+library(magrittr) # version 2.0.3
+library(nparLD) # version 2.2
+library(rstatix) # version 0.7.2
+select <- dplyr::select # make sure we're using tidyverse's version of select...
+```
+
+Load the data.
+```{r}
+data <- read_csv('../data/alignment_original.csv', show_col_types = FALSE)
+```
+
+Pivot the data longer.
+```{r}
+data %<>% pivot_longer(cols = -c(Musician, sub, scramble), 
+                       names_to = 'level', values_to = 'value')
+```
+
+Make sure non-musicians and musicians are labelled with different numbers.
+```{r}
+data %<>% mutate(sub = ifelse(Musician == 'Yes', sub, sub + 45))
+```
+
+```{r}
+data %<>% mutate(level = factor(level, levels = c(1,2,3,4,5,8,16), ordered = TRUE))
+```
+
+For comparisons across levels, look at nested structure only (levels 2, 4, 8, 16).
+```{r}
+data_nested <- data %>%
+  filter(!level %in% c(1,3,5))
+```
+
+
+\newpage
+# Alignment above chance (all levels, all conditions)
+
+At each level, which values are above chance?
+```{r}
+stat.test <- data %>%
+  group_by(scramble, level) %>%
+  t_test(value ~ 1) %>%
+  adjust_pvalue(method = "BH") %>%
+  add_significance() %>%
+  arrange(scramble, level)
+```
+
+```{r}
+print(stat.test, n = nrow(stat.test))
+```
+
+(Tables 2b, 3b, 4b, and 5b)
+
+
+\newpage
+# Three-way non-parametric ANOVA-type test
+```{r}
+attach(data_nested)
+# scramble is a within-subject factor ("time1") - all subjects hear all conditions
+# level is the other within-subject factor ("time2") - all levels are analyzed
+# expertise is the between-subject factor ("group") - subjects are either musicians or non-musicians
+f1.ld.f2(value, time1=scramble, time2=level, group=Musician, subject=sub,
+         time1.name="condition", time2.name="level", group.name="expertise", 
+         description=FALSE)$ANOVA.test
+```
+
+* No three-way interaction between scramble condition, level, and expertise group: F(6.6) = 1.70, p = .11
+* Main effect of condition: F(2.8) = 5.47, p = .0012
+* Main effect of level: F(2.2) = 12.14, p < .001
+* Interaction between condition and level: F(6.6) = 6.67, p < .001)
+* No main effect of expertise: F(1) = .443, p = .51
+
+
+\newpage
+# Post-hoc tests: comparison of levels (1B)
+
+```{r}
+data_nested_1B <- filter(data_nested, scramble == '1B')
+```
+
+```{r}
+attach(data_nested_1B)
+f1.ld.f1(value, time=level, group=Musician, subject=sub,
+         time.name="level", group.name="expertise", 
+         description=FALSE)$ANOVA.test
+```
+
+Main effect of level: F(2.3) = 6.69, p < .001
+
+\newpage
+```{r}
+pairwise.wilcox.test(data_nested_1B$value, data_nested_1B$level,
+                     p.adjust.method = "bonferroni", paired=TRUE)
+```
+No significant differences between levels (Table S2a).
+
+
+\newpage
+# Post-hoc tests: comparison of levels (2B)
+
+```{r}
+data_nested_2B <- filter(data_nested, scramble == '2B')
+```
+
+```{r}
+attach(data_nested_2B)
+f1.ld.f1(value, time=level, group=Musician, subject=sub,
+         time.name="level", group.name="expertise", 
+         description=FALSE)$ANOVA.test
+```
+
+Main effect of level: F(2.5) = 12.56, p < .001
+
+\newpage
+```{r}
+pairwise.wilcox.test(data_nested_2B$value, data_nested_2B$level,
+                     p.adjust.method = "bonferroni", paired=TRUE)
+```
+Greater at the 2-bar level than at the 8-bar (p = .045) or 16-bar (p < .001) level, and greater at the 4-bar level than the 16-bar level (p = .0034) (Table S3a). 
+
+\newpage
+# Post-hoc tests: comparison of levels (8B)
+
+```{r}
+data_nested_8B <- filter(data_nested, scramble == '8B')
+```
+
+```{r}
+attach(data_nested_8B)
+f1.ld.f1(value, time=level, group=Musician, subject=sub,
+         time.name="level", group.name="expertise", 
+         description=FALSE)$ANOVA.test
+```
+
+Main effect of level: F(2.2) = 11.11, p < .001
+
+\newpage
+```{r}
+pairwise.wilcox.test(data_nested_8B$value, data_nested_8B$level,
+                     p.adjust.method = "bonferroni", paired=TRUE)
+```
+
+Greater at the 8-bar level than all other levels (2-bar level: p < .001, 4-bar level: p < .001, 16-bar level: p = .0031), and values at the 4-bar level were greater than at the 2-bar level (p < .001) (Table S4a).
+
+
+\newpage
+# Post-hoc tests: comparison of levels (Intact)
+
+```{r}
+data_nested_I <- filter(data_nested, scramble == 'Intact')
+```
+
+```{r}
+attach(data_nested_I)
+f1.ld.f1(value, time=level, group=Musician, subject=sub,
+         time.name="level", group.name="expertise", 
+         description=FALSE)$ANOVA.test
+```
+
+No main effect of level: F(2.1) = .830, p = .443
+
+\newpage
+```{r}
+pairwise.wilcox.test(data_nested_I$value, data_nested_I$level,
+                     p.adjust.method = "bonferroni", paired=TRUE)
+```
+Greater at the 8-bar level than the 4-bar level (p = .0093) (Table S5a).
+
+
+\newpage
+# Interaction between 8B and Intact for 8-bar and 16-bar levels
+
+Look at both groups side by side.
+
+```{r}
+long_filtered <- data_nested %>%
+  filter(scramble %in% c("8B", "Intact"),
+         level %in% c(8,16))
+
+attach(long_filtered)
+f1.ld.f2(value, time1=scramble, time2=level, group=Musician, subject=sub,
+      time1.name="condition", time2.name="level", group.name="expertise", 
+      description=FALSE)$ANOVA.test
+```
+
+\newpage
+### Musicians only
+
+```{r}
+M_long_filtered <- data_nested %>%
+  filter(scramble %in% c("8B", "Intact"),
+         level %in% c(8,16),
+         Musician == "Yes")
+
+attach(M_long_filtered)
+ld.f2(value, time1=scramble, time2=level, subject=sub,
+      time1.name="condition", time2.name="level", 
+      description=FALSE)$ANOVA.test
+```
+Significant interaction between condition and level for musicians: F(1) = 9.97, p = .0016
+
+\newpage
+### Non-musicians 
+
+```{r}
+NM_long_filtered <- data_nested %>%
+  filter(scramble %in% c("8B", "Intact"),
+         level %in% c(8,16),
+         Musician == "No")
+
+attach(NM_long_filtered)
+ld.f2(value, time1=scramble, time2=level, subject=sub,
+      time1.name="condition", time2.name="level", 
+      description=FALSE)$ANOVA.test
+```
+
+Interaction was not significant for non-musicians: F(1) = 0.331, p = .57
