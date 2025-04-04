@@ -209,20 +209,3 @@ ggplot(yrs_info, aes(yrs_exp, `overal pred acc`)) +
 ggsave('../figure_S1B.png', width = 5, height = 5)
 
 
-# the only significant result was memory 8B
-ggplot(yrs_info, aes(yrs_exp, `memAcc8b`)) +
-  geom_point() +
-  geom_smooth(method = 'lm')
-
-# if we filter out the three people with >20 years experience, does the effect go away?
-yrs_info %>%
-  filter(yrs_exp < 20) %>%
-  lm(memAcc8b ~ yrs_exp, .) %>%
-  summary()
-# yes
-
-yrs_info %>%
-  filter(yrs_exp < 20) %>%
-  ggplot(aes(yrs_exp, memAcc8b)) +
-  geom_point() +
-  geom_smooth(method = 'lm')
