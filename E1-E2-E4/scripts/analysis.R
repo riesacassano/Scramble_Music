@@ -212,7 +212,7 @@ ggplot(yrs_info, aes(yrs_exp, seg2)) +
   geom_point() +
   geom_smooth(method = 'lm', color = '#F8766D', fill = '#F8766D') +
   xlab('Years of Musical Experience') +
-  ylab('Overall Proportion Correct (Segmentation)') +
+  ylab('Overall Proportion Correct (Categorization)') +
   scale_x_continuous(breaks = seq(5,30,5)) +
   scale_y_continuous(breaks = seq(0.4, 1, 0.1)) +
   ylim(0.4, 1) +
