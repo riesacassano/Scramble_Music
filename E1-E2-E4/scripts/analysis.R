@@ -195,7 +195,7 @@ ggplot(yrs_info, aes(yrs_exp, overallMemAcc)) +
   scale_y_continuous(breaks = seq(0.4, 1, 0.1)) +
   ylim(0.4, 1) +
   theme_gray(base_size = 16)
-ggsave('../figure_S1A.png', width = 5, height = 5)
+#ggsave('../figure_S1A.png', width = 5, height = 5)
 
 ggplot(yrs_info, aes(yrs_exp, `overal pred acc`)) +
   geom_point() +
@@ -206,6 +206,15 @@ ggplot(yrs_info, aes(yrs_exp, `overal pred acc`)) +
   scale_y_continuous(breaks = seq(0.4, 1, 0.1)) +
   ylim(0.4, 1) +
   theme_gray(base_size = 16)
-ggsave('../figure_S1B.png', width = 5, height = 5)
+#ggsave('../figure_S1B.png', width = 5, height = 5)
 
-
+ggplot(yrs_info, aes(yrs_exp, seg2)) +
+  geom_point() +
+  geom_smooth(method = 'lm', color = '#F8766D', fill = '#F8766D') +
+  xlab('Years of Musical Experience') +
+  ylab('Overall Proportion Correct (Segmentation)') +
+  scale_x_continuous(breaks = seq(5,30,5)) +
+  scale_y_continuous(breaks = seq(0.4, 1, 0.1)) +
+  ylim(0.4, 1) +
+  theme_gray(base_size = 16)
+#ggsave('../figure_S1C.png', width = 5, height = 5)
