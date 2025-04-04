@@ -169,7 +169,7 @@ yrs_info$yrs_exp[yrs_info$yrs_exp == '9+'] = 9
 yrs_info$yrs_exp <- as.numeric(yrs_info$yrs_exp)
 
 summary(lm(`overallMemAcc` ~ yrs_exp, yrs_info)) #NS
-summary(lm(`memAcc8b` ~ yrs_exp, yrs_info)) # beta = -0.0117, p = .0119
+summary(lm(`memAcc8b` ~ yrs_exp, yrs_info)) # beta = -.0117, p = .0119
 summary(lm(`memAcc2b` ~ yrs_exp, yrs_info)) #NS
 summary(lm(`memAcc1b` ~ yrs_exp, yrs_info)) #NS
 
@@ -178,7 +178,14 @@ summary(lm(`predAcc8b` ~ yrs_exp, yrs_info)) #NS
 summary(lm(`predAcc2b` ~ yrs_exp, yrs_info)) #NS
 summary(lm(`predAcc1b` ~ yrs_exp, yrs_info)) #NS
 
-# plot overall memory and prediction accuracy
+summary(lm(seg2 ~ yrs_exp, yrs_info)) #NS
+summary(lm(seg_intact ~ yrs_exp, yrs_info)) #NS
+summary(lm(seg_8b ~ yrs_exp, yrs_info)) # beta = -.0268, p = .0478
+summary(lm(seg_2b ~ yrs_exp, yrs_info)) #NS
+summary(lm(seg_1b ~ yrs_exp, yrs_info)) #NS
+
+
+# plot overall accuracies
 ggplot(yrs_info, aes(yrs_exp, overallMemAcc)) +
   geom_point() +
   geom_smooth(method = 'lm', color = '#F8766D', fill = '#F8766D') +
