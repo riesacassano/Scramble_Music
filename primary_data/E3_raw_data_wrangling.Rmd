@@ -9,6 +9,49 @@ This notebook combines and wrangles data for experiment 3.
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
-library(tidyverse)
-library(magrittr)
+library(tidyverse) # version 2.0.0
+library(magrittr) # version 2.0.3
+select <- dplyr::select # make sure we're using the dplyr version of select
 ```
+
+Load dataset 3B.
+
+```{r}
+raw_3B <- read_csv('raw_dataset_3B.csv', show_col_types = FALSE)
+```
+
+Select necessary columns and keep only main task.
+
+```{r}
+main_3B <- raw_3B %>%
+  # filter the main task
+  # Block_Nr = 1 is before the main task: consent, instructions, headphone check, practice
+  # Block_Nr = 3 is the post-survey
+  filter(Block_Nr == '2') %>%
+  
+  # keep only the necessary columns
+  # just want the responses from run 2, but add 'space_press1' here if you want to look at run 1 as well
+  select('Task_Name', 'space_press2', 'exp_subject_id') %>%
+  # move subject ID to the front
+  relocate('exp_subject_id') %>%
+  
+  # any task name with a percent in it is a "strategy" question
+  filter(!grepl('%', Task_Name)) %>%
+
+  # separate condition and stimulus number
+  separate_wider_delim(Task_Name, delim = '_', names = c('scramble', 'stim_num')) %>%
+  # capitalize Intact
+  mutate(scramble = ifelse(scramble == 'intact', 'Intact', scramble)) %>%
+  
+  # keep only the actual timestamps from `space_press2`
+  # can't specify the column names in this step because there are some cells with NAs
+  separate_wider_delim(space_press2, delim = '---', names_sep = '_') %>%
+  mutate(space_press2_1 = NULL) %>%
+  rename(responses = space_press2_2) #%>%
+  
+  # before cleaning up this response column, check that each subject has complete data
+  #group_by(exp_subject_id) %>%
+  #summarize(count = n())
+  # all of the subject have 12 trials (complete), except for 377660 who isn't included in the subsetting later anyway
+```
+
