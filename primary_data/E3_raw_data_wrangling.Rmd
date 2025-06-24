@@ -14,12 +14,30 @@ library(magrittr) # version 2.0.3
 select <- dplyr::select # make sure we're using the dplyr version of select
 ```
 
+
+# Wrangle dataset 3A
+
+Load dataset 3A.
+
+```{r}
+raw_3A <- read_csv('raw_combined_E3A.csv', show_col_types = FALSE)
+```
+
+
+
+
+
+
+
+
+
+
 # Wrangle dataset 3B
 
 Load dataset 3B.
 
 ```{r}
-raw_3B <- read_csv('raw_dataset_3B.csv', show_col_types = FALSE)
+raw_3B <- read_csv('raw_combined_E3B.csv', show_col_types = FALSE)
 ```
 
 Select necessary columns and keep only main task.
@@ -140,4 +158,6 @@ rate_3B <- subset_3B %>%
 None of these cases have rates > 30.
 
 
-# Wrangle dataset 3A
+# Combine
+
+
