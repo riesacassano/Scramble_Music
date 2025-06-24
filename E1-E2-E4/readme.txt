@@ -2,6 +2,11 @@ Experiments 1 (Memory), 2 (Prediction), 4 (Categorization) readme
 
 This folder contains the processed data and scripts needed to generate figures 2, 5, 6, and S1 and E1, E2, and E4 results.
 
+`sub_ids.xlsx` contains the Labvanced IDs for the participants who completed the memory, prediction, and categorization tasks, as well as whether they were a Musician or Non-musician.
+
+`years_musical_exp.xlsx` contains the years of musical experience reported by the musicians. Some participants included in the main analysis are not represented here because they did not report their years of experience in the post-survey.
+
+
 Data:
 
 `data.xlsx` has the processed data for prediction, memory, and categorization. For each task performed, accuracy was computed for each condition. 
