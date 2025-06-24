@@ -14,6 +14,8 @@ library(magrittr) # version 2.0.3
 select <- dplyr::select # make sure we're using the dplyr version of select
 ```
 
+# Wrangle dataset 3B
+
 Load dataset 3B.
 
 ```{r}
@@ -135,3 +137,7 @@ rate_3B <- subset_3B %>%
   summarize(mean_response_rate = mean(rate))
 ```
 
+None of these cases have rates > 30.
+
+
+# Wrangle dataset 3A
