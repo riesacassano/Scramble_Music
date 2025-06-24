@@ -55,3 +55,21 @@ main_3B <- raw_3B %>%
   # all of the subject have 12 trials (complete), except for 377660 who isn't included in the subsetting later anyway
 ```
 
+
+Subset dataset 3B to match musician criteria and stimulus length of dataset 3A.
+
+```{r}
+# list of subject IDs that match the musician criteria (either >5 years of experience or none at all)
+sub_ids <- c(
+  # non-musicians (n = 10)
+  '377777', '377770', '377747', '377708', '377701',
+  '377692', '377665', '377664', '377663', '393253', 
+  # musicians (n = 13)
+  '377647', '393320', '393267', '393245', '393246',
+  '393242', '393241', '393240', '393230', '393254', 
+  '393252', '393249', '393239'
+  )
+
+subset_3B <- main_3B %>%
+  # musician criteria
+  filter(exp_subject_id %in% sub_ids) %>%
