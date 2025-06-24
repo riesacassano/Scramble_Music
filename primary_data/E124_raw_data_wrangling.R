@@ -15,29 +15,27 @@ data <- read_csv("../data/Sarah_E124/combined_raw.csv")
 data_yrs <- read_excel("../data/Sarah_E124/years_musical_exp.xlsx")
 
 
-# filter to keep the main task only
-tasks <- unique(data$Task_Name)
-tasks <- tasks[-c(1:11, 13, 14, 16:19, 21, 23:25, 28, 29, 30, 34)]
-print(sort(tasks)) # to check
-# remove "OpenEndedSeg" since that's for E3
-
-data_main <- filter(data, Task_Name %in% tasks)
-
-# extract the different tasks
-memory <- data_main %>%
+# extract the main task, remove practice task and instruction
+memory <- data %>%
   filter(grepl('Memory', Task_Name)) %>%
+  filter(!grepl('Practice', Task_Name)) %>%
+  filter(!grepl('Instructions', Task_Name)) %>%
   mutate(scramble = ifelse(!is.na(scramble_m_1), scramble_m_1,
                            ifelse(!is.na(scramble_m_2), scramble_m_2, scramble_m_3))) %>%
   select(c(exp_subject_id, Trial_Nr, response, scramble)) 
   
-prediction <- data_main %>%
+prediction <- data %>%
   filter(grepl('Prediction', Task_Name)) %>%
+  filter(!grepl('Practice', Task_Name)) %>%
+  filter(!grepl('Instructions', Task_Name)) %>%
   mutate(scramble = ifelse(!is.na(scramble_p_1), scramble_p_1,
                            ifelse(!is.na(scramble_p_2), scramble_p_2, scramble_p_3))) %>%
   select(c(exp_subject_id, Trial_Nr, response, scramble)) 
 
-categorization <- data_main %>%
+categorization <- data %>%
   filter(grepl('Categorization', Task_Name)) %>%
+  filter(!grepl('Practice', Task_Name)) %>%
+  filter(!grepl('Instructions', Task_Name)) %>%
   mutate(scramble = ifelse(!is.na(scramble_cat_1), scramble_cat_1,
                            ifelse(!is.na(scramble_cat_3), scramble_cat_3, scramble_catseg_4))) %>%
   select(c(exp_subject_id, Trial_Nr, response_seg2, scramble)) %>%
