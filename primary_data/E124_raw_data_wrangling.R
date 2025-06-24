@@ -1,12 +1,12 @@
-library(tidyverse)
-library(magrittr)
-library(readxl)
-select <- dplyr::select
+library(tidyverse) # version 2.0.0
+library(magrittr) # version 2.0.3
+library(readxl) # version 1.4.3
+select <- dplyr::select # make sure we're using the dplyr version of the select function
 
 # This script combines the raw data for E1, E2, and E4, retaining individual trial-level information.
 
 # set working directory
-setwd("/Users/rcassan2/Documents/GitHub/music_annotations_analysis/for_paper_fully_combined/scripts")
+setwd("/Users/rcassan2/Documents/GitHub/Scramble_Music/primary_data/")
 
 # data files were combined and columns were selected using pandas
 # load the combined file
