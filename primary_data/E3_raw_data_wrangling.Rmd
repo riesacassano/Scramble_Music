@@ -1,0 +1,14 @@
+---
+title: "E3 data wrangling"
+author: "R. Cassano-Coleman"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+This notebook combines and wrangles data for experiment 3.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+library(magrittr)
+```
