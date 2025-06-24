@@ -10,22 +10,24 @@ file_list = os.listdir(folder)
 
 df_list = []
 
-#for entry in file_list:
-for i in range(2):
-	entry = file_list[i]
+for entry in file_list:
+#for i in range(2):
+#	entry = file_list[i]
 	filepath = folder + entry
-	print(entry)
-	if '.xlsx' in filepath: this_file = pd.read_excel(filepath)
-	elif '.csv' in filepath: this_file = pd.read_csv(filepath)
+	#print(entry)
+	if '.csv' in filepath: this_file = pd.read_csv(filepath)
+	#print(this_file)
 	
 	# check length anomalies
 	#if len(this_file) != 65: 
 	#	print(entry, len(this_file))
+	# subjects 350110, 483538, 481798, 334102, and 481810 have incomplete datasets
+	# but enough data that we include them in the analysis
 	
-	# select the columns of interest
-	# check header anomalies - manually fixed
+	# check header anomalies
 	#if this_file.columns[1] != "Block_Name": print(entry, this_file.columns[1])
 
+	# select the columns of interest
 	# exp_subject_id
 	# Task_Name
 	# Trial_Nr
