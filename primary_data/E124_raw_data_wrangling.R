@@ -1,0 +1,97 @@
+library(tidyverse)
+library(magrittr)
+library(readxl)
+select <- dplyr::select
+
+# This script combines the raw data for E1, E2, and E4, retaining individual trial-level information.
+
+# set working directory
+setwd("/Users/rcassan2/Documents/GitHub/music_annotations_analysis/for_paper_fully_combined/scripts")
+
+# data files were combined and columns were selected using pandas
+# load the combined file
+data <- read_csv("../data/Sarah_E124/combined_raw.csv")
+# load the file with years of musical experience
+data_yrs <- read_excel("../data/Sarah_E124/years_musical_exp.xlsx")
+
+
+# filter to keep the main task only
+tasks <- unique(data$Task_Name)
+tasks <- tasks[-c(1:11, 13, 14, 16:19, 21, 23:25, 28, 29, 30, 34)]
+print(sort(tasks)) # to check
+# remove "OpenEndedSeg" since that's for E3
+
+data_main <- filter(data, Task_Name %in% tasks)
+
+# extract the different tasks
+memory <- data_main %>%
+  filter(grepl('Memory', Task_Name)) %>%
+  mutate(scramble = ifelse(!is.na(scramble_m_1), scramble_m_1,
+                           ifelse(!is.na(scramble_m_2), scramble_m_2, scramble_m_3))) %>%
+  select(c(exp_subject_id, Trial_Nr, response, scramble)) 
+  
+prediction <- data_main %>%
+  filter(grepl('Prediction', Task_Name)) %>%
+  mutate(scramble = ifelse(!is.na(scramble_p_1), scramble_p_1,
+                           ifelse(!is.na(scramble_p_2), scramble_p_2, scramble_p_3))) %>%
+  select(c(exp_subject_id, Trial_Nr, response, scramble)) 
+
+categorization <- data_main %>%
+  filter(grepl('Categorization', Task_Name)) %>%
+  mutate(scramble = ifelse(!is.na(scramble_cat_1), scramble_cat_1,
+                           ifelse(!is.na(scramble_cat_3), scramble_cat_3, scramble_catseg_4))) %>%
+  select(c(exp_subject_id, Trial_Nr, response_seg2, scramble)) %>%
+  rename(response = response_seg2)
+
+
+# load the subject list
+subs <- read_excel('../data/Sarah_E124/sub_ids.xlsx')
+memory_subs <- select(subs, c("Memory sub ids", "Musician?...2" )) %>%
+  rename("Musician" = "Musician?...2")
+prediction_subs <- select(subs, c("Prediction sub ids", "Musician?...5" ))%>%
+  rename("Musician" = "Musician?...5") %>%
+  na.omit()
+categorization_subs <- select(subs, c("Categorization sub ids", "Musician?...8" )) %>%
+  rename("Musician" = "Musician?...8")
+
+
+# join Musician information and years of musical experience, if available
+memory %<>% 
+  left_join(., memory_subs, by = join_by('exp_subject_id' == 'Memory sub ids'), "many-to-one") %>%
+  left_join(., data_yrs, by = join_by('exp_subject_id' == 'LabvancedID')) %>%
+  mutate(Musician = as.factor(Musician))
+prediction %<>% 
+  left_join(., prediction_subs, by = join_by('exp_subject_id' == 'Prediction sub ids'), "many-to-one") %>%
+  left_join(., data_yrs, by = join_by('exp_subject_id' == 'LabvancedID')) %>%
+  mutate(Musician = as.factor(Musician))
+categorization %<>% 
+  left_join(., categorization_subs, by = join_by('exp_subject_id' == 'Categorization sub ids'), "many-to-one") %>%
+  left_join(., data_yrs, by = join_by('exp_subject_id' == 'LabvancedID')) %>%
+  mutate(Musician = as.factor(Musician))
+
+
+# there are more subjects than who we include
+print(length(unique(memory$exp_subject_id))) # 129
+print(length(unique(prediction$exp_subject_id))) # 123
+print(length(unique(categorization$exp_subject_id))) # 122
+
+memory %<>% filter(!is.na(Musician))
+prediction %<>% filter(!is.na(Musician))
+categorization %<>% filter(!is.na(Musician))
+
+# check again
+print(length(unique(memory$exp_subject_id))) # 102 
+print(length(unique(prediction$exp_subject_id))) # 105
+print(length(unique(categorization$exp_subject_id))) # 106
+
+# are the groups balanced?
+print(length(unique(filter(memory, Musician == 'Yes')$exp_subject_id))) # 52 / 102 are musicians
+print(length(unique(filter(prediction, Musician == 'Yes')$exp_subject_id))) # 53 / 105 are musicians
+print(length(unique(filter(categorization, Musician == 'Yes')$exp_subject_id))) # 54 / 106 are musicians
+
+# save the wrangled data
+write_csv(memory, '../data/Sarah_E124/memory.csv')
+write_csv(prediction, '../data/Sarah_E124/prediction.csv')
+write_csv(categorization, '../data/Sarah_E124/categorization.csv')
+
+
