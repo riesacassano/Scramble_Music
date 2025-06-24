@@ -49,4 +49,4 @@ for entry in file_list:
 
 # concatenate
 big_df = pd.concat(df_list, ignore_index = True)
-big_df.to_csv('raw_combined.csv', index = False)
+big_df.to_csv('raw_combined_E124.csv', index = False)

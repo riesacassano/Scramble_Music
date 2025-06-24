@@ -10,7 +10,7 @@ setwd(" /Scramble_Music/primary_data/")
 
 # data files were combined and columns were selected using pandas
 # load the combined file
-data <- read_csv("raw_combined.csv")
+data <- read_csv("raw_combined_E124.csv")
 # load the file with years of musical experience from the E1-E2-E4 folder
 data_yrs <- read_excel("../E1-E2-E4/years_musical_exp.xlsx")
 # load the subject list
