@@ -5,8 +5,8 @@ select <- dplyr::select # make sure we're using the dplyr version of the select 
 
 # This script combines the raw data for E1, E2, and E4, retaining individual trial-level information.
 
-# set working directory
-setwd("/Users/rcassan2/Documents/GitHub/Scramble_Music/primary_data/")
+# set working directory!
+setwd(" /Scramble_Music/primary_data/")
 
 # data files were combined and columns were selected using pandas
 # load the combined file
