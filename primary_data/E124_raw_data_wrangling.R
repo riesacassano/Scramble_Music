@@ -10,10 +10,11 @@ setwd("/Users/rcassan2/Documents/GitHub/Scramble_Music/primary_data/")
 
 # data files were combined and columns were selected using pandas
 # load the combined file
-data <- read_csv("../data/Sarah_E124/combined_raw.csv")
-# load the file with years of musical experience
-data_yrs <- read_excel("../data/Sarah_E124/years_musical_exp.xlsx")
-
+data <- read_csv("raw_combined.csv")
+# load the file with years of musical experience from the E1-E2-E4 folder
+data_yrs <- read_excel("../E1-E2-E4/years_musical_exp.xlsx")
+# load the subject list
+subs <- read_excel('../E1-E2-E4/sub_ids.xlsx')
 
 # extract the main task, remove practice task and instruction
 memory <- data %>%
@@ -42,8 +43,7 @@ categorization <- data %>%
   rename(response = response_seg2)
 
 
-# load the subject list
-subs <- read_excel('../data/Sarah_E124/sub_ids.xlsx')
+# get the task-specific the subject lists
 memory_subs <- select(subs, c("Memory sub ids", "Musician?...2" )) %>%
   rename("Musician" = "Musician?...2")
 prediction_subs <- select(subs, c("Prediction sub ids", "Musician?...5" ))%>%
