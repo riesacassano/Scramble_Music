@@ -122,3 +122,16 @@ subset_3B <- main_3B %>%
   # add stimulus set = 1 for when we combine
   mutate(stimulus_set = 1, .after = Musician)
 ```
+
+Compute rate and exclude any cases where rate is greater than 1 response every 2 seconds (30 responses per minute).
+
+```{r}
+# each of these stimuli are 66 seconds, rate is expressed per minute
+rate_3B <- subset_3B %>% 
+  group_by(exp_subject_id, Musician, stimulus_set, scramble, stim_num) %>%
+  summarize(rate = (n() / 66) * 60) %>%
+  # average over both runs for each subject
+  group_by(exp_subject_id, Musician, stimulus_set, scramble) %>%
+  summarize(mean_response_rate = mean(rate))
+```
+
