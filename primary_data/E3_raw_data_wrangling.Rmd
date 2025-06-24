@@ -8,22 +8,50 @@ output: html_document
 This notebook combines and wrangles data for experiment 3.
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse) # version 2.0.0
 library(magrittr) # version 2.0.3
+library(readxl) # version 1.4.3
 select <- dplyr::select # make sure we're using the dplyr version of select
 ```
 
 
 # Wrangle dataset 3A
 
-Load dataset 3A.
+Load dataset 3A and the musician/non-musician info.
 
 ```{r}
 raw_3A <- read_csv('raw_combined_E3A.csv', show_col_types = FALSE)
+groups_3A <- read_excel('../E3/sub_ids_3A.xlsx')
 ```
 
+Keep only the main task.
 
+```{r}
+main_3A <- raw_3A %>%
+  filter(grepl('OpenEndedSeg',Task_Name)) %>%
+  # scramble level is in one of the following columns...
+  mutate(scramble = ifelse(!is.na(scramble_cat_4), scramble_cat_4, 
+                           ifelse(!is.na(scramble_level), scramble_level,
+                                  ifelse(!is.na(scramble_open_3), scramble_open_3, NA)))) %>%
+  select(c(exp_subject_id, Task_Name, participant_spacePress2, scramble)) %>%
+  # capitalize Intact
+  mutate(scramble = ifelse(scramble == 'intact', 'Intact', scramble)) %>%
+
+  # the number in Task_Name encodes stimulus set
+  separate_wider_delim(Task_Name, delim = '_', names_sep = '_') %>% #, names = c(NULL, 'stimulus_set')) # not sure why this didn't work
+  mutate(Task_Name_1 = NULL) %>%
+  rename(stimulus_set = Task_Name_2) %>%
+
+  # add group info
+  left_join(., groups_3A, by = join_by('exp_subject_id')) %>%
+  relocate(Musician, .after = exp_subject_id) %>%
+  # subjects who are left out did stimulus set 2, which is highly overlapping with stimulus set 1
+  filter(!is.na(Musician)) %>%
+  # check completeness
+  group_by(exp_subject_id) %>%
+  summarize(count = n())
+```
 
 
 
