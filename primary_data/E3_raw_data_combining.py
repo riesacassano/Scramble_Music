@@ -24,9 +24,13 @@ for entry in file_list:
 	# Task_Name
 	# Trial_Nr
 	# participant_spacePress2
-	# scramble_level
+	# condition is under something with scramble in it
 
-	this_file_selected = this_file[['exp_subject_id', 'Task_Name', 'Trial_Nr', 'participant_spacePress2', 'scramble_level']]
+	
+	this_file1 = this_file[['exp_subject_id', 'Task_Name', 'Trial_Nr', 'participant_spacePress2']]
+	this_file2 = this_file.filter(like = 'scramble')
+	this_file_selected = pd.concat([this_file1, this_file2], axis=1)
+
 	df_list.append(this_file_selected)
 
 # concatenate
