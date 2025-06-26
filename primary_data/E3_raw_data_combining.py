@@ -22,12 +22,12 @@ for entry in file_list:
 	# select the columns of interest
 	# exp_subject_id
 	# Task_Name
-	# Trial_Nr
+	# Trial_Id
 	# participant_spacePress2
 	# condition is under something with scramble in it
 
 	
-	this_file1 = this_file[['exp_subject_id', 'Task_Name', 'Trial_Nr', 'participant_spacePress2']]
+	this_file1 = this_file[['exp_subject_id', 'Task_Name', 'Trial_Id', 'participant_spacePress2']]
 	this_file2 = this_file.filter(like = 'scramble')
 	this_file_selected = pd.concat([this_file1, this_file2], axis=1)
 
