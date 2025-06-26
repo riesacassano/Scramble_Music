@@ -43,14 +43,29 @@ main_3A <- raw_3A %>%
   mutate(Task_Name_1 = NULL) %>%
   rename(stimulus_set = Task_Name_2) %>%
 
-  # add group info
-  left_join(., groups_3A, by = join_by('exp_subject_id')) %>%
-  relocate(Musician, .after = exp_subject_id) %>%
-  # subjects who are left out did stimulus set 2, which is highly overlapping with stimulus set 1
-  filter(!is.na(Musician)) %>%
-  # check completeness
-  group_by(exp_subject_id) %>%
-  summarize(count = n())
+  # keep only the actual timestamps from `space_press2`
+  # can't specify the column names in this step because there are some cells with NAs
+  separate_wider_delim(participant_spacePress2, delim = '---', names_sep = '_') %>%
+  mutate(participant_spacePress2_1 = NULL) %>%
+  rename(responses = participant_spacePress2_2) %>%
+
+  # transform response column into timestamp representation
+  # first, remove NA rows
+  filter(!is.na(responses)) %>%
+  # replace 'values=' and " with an empty string
+  mutate(responses = str_replace(responses, 'values=', '')) %>%
+  mutate(responses = str_replace(responses, '"', '')) %>%
+  # give each timestamp its own row
+  separate_longer_delim(responses, delim = ';') %>%
+  filter(responses != '') %>%
+  # convert from milliseconds to seconds
+  mutate(responses = as.numeric(responses) / 1000) %>%
+
+  # rename column for analysis
+  rename(value = responses) %>%
+  
+  # move scramble
+  relocate(scramble, .after = stimulus_set)
 ```
 
 
