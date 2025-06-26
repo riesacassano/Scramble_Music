@@ -1,0 +1,705 @@
+---
+title: "E3 alignment (Bayes version)"
+author: "R. Cassano-Coleman"
+date: "`r Sys.Date()`"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse) # version 2.0.0
+library(magrittr) # version 2.0.3
+library(rstatix) # version 0.7.2
+
+library(brms) # version 2.22.0
+library(bayestestR) # version 0.15.0
+library(emmeans) # version 1.10.0
+```
+
+This notebook analyzes alignment values using a Bayesian approach.
+
+```{r}
+set.seed(15000)
+```
+
+Load the data.
+```{r}
+data <- read_csv('../data/alignment_original.csv', show_col_types = FALSE)
+```
+
+Check number of subjects per group.
+
+```{r}
+length(unique(filter(data, Musician == 'Yes')$sub))
+length(unique(filter(data, Musician == 'No')$sub))
+```
+
+
+Make sure non-musicians and musicians are labelled with different numbers.
+```{r}
+data %<>% mutate(sub = ifelse(Musician == 'Yes', sub, sub + 49))
+```
+
+Pivot the data longer.
+```{r}
+data %<>% pivot_longer(cols = -c(Musician, sub, scramble), 
+                       names_to = 'level', values_to = 'value')
+```
+
+
+
+For comparisons across levels, look at nested structure only (levels 2, 4, 8, 16).
+```{r}
+data_nested <- data %>%
+  filter(!level %in% c(1,3,5))
+```
+
+Make group, scramble, and level into factors and set contrasts.
+```{r}
+data %<>% mutate(
+  Musician = factor(Musician, levels = c('Yes', 'No')),
+  scramble = factor(scramble, levels = c('Intact', '8B', '2B', '1B')),
+  level = factor(level, levels = c(1,2,3,4,5,8,16), ordered = TRUE)
+  )
+
+contrasts(data$scramble) <- contr.treatment(4) # Intact as reference
+contrasts(data$level) <- contr.treatment(7, base = 6) # 8-bar as reference
+```
+
+```{r}
+data_nested %<>% mutate(
+  Musician = factor(Musician, levels = c('Yes', 'No')),
+  scramble = factor(scramble, levels = c('Intact', '8B', '2B', '1B')),
+  level = factor(level, levels = c(2,4,8,16), ordered = TRUE)
+  )
+
+contrasts(data_nested$scramble) <- contr.treatment(4) # Intact as reference
+contrasts(data_nested$level) <- contr.treatment(4, base = 3) # 8-bar as reference
+```
+
+Check normality of the data.
+```{r}
+data %>% 
+  group_by(scramble, level) %>%
+  shapiro_test(value)
+```
+
+Visualize.
+```{r}
+data %>%
+  ggplot(aes(x = level, y = value)) +
+  geom_jitter(width = 0.25, alpha = 0.25) +
+  facet_wrap(vars(scramble)) +
+  ylim(-0.25, 0.5)
+```
+
+\newpage
+
+# Main analysis
+
+```{r, include=FALSE}
+get_prior(value ~ Musician + scramble + level + (1|sub), data = data_nested)
+```
+
+```{r, include=FALSE}
+# not run - this block is for reference
+# group contrast - expect Musicians to be more aligned
+#set_prior('normal(-0.1, 0.1)', coef = 'Musician1')
+
+# Intact to 8B contrast - expect greater alignment in 8B since phrase level is emphasized by scramble
+#set_prior('normal(0.1, 0.1)', coef = 'scramble2')
+
+# Intact to 2B and 1B contrast - expect greater alignment in Intact since structure is disrupted in 2B and 1B
+#set_prior('normal(-0.1, 0.1)', coef = 'scramble3')
+#set_prior('normal(-0.1, 0.1)', coef = 'scramble4')
+
+# 8-bar to all other levels - expect 8-bar to be preferred
+# nested
+#set_prior('normal(-0.2, 0.1)', coef = 'level1')
+#set_prior('normal(-0.1, 0.1)', coef = c('level2', 'level4')) # 4 and 16 less bad
+# all levels
+#set_prior('normal(-0.2, 0.1)', coef = c('level1', 'level2', 'level3', 'level5'))
+#set_prior('normal(-0.1, 0.1)', coef = c('level4', 'level7')) # 4 and 16 less bad
+
+# interactions
+#set_prior('normal(0, 0.1)', coef = c()) # fill in here...
+```
+
+```{r}
+nested_3way <- brm(value ~ Musician + scramble + level + (1|sub), data = data_nested,
+                   prior = c(
+                     set_prior('normal(-0.1, 0.1)', coef = 'Musician1'),
+                     set_prior('normal(0.1, 0.1)', coef = 'scramble2'),
+                     set_prior('normal(-0.1, 0.1)', coef = 'scramble3'),
+                     set_prior('normal(-0.1, 0.1)', coef = 'scramble4'),
+                     set_prior('normal(-0.2, 0.1)', coef = 'level1'),
+                     set_prior('normal(-0.1, 0.1)', coef = c('level2', 'level4')) 
+                   ),
+                   save_pars = save_pars(all = TRUE), iter = 5000,
+                   file = '../models/E3_alignment_3way_noInt')
+```
+
+```{r}
+plot(nested_3way)
+```
+
+```{r}
+print(summary(nested_3way), digits = 4)
+```
+
+
+\newpage
+
+```{r}
+nested_noMus <- brm(value ~ scramble + level + (1|sub), data = data_nested,
+                    prior = c(
+                     set_prior('normal(0.1, 0.1)', coef = 'scramble2'),
+                     set_prior('normal(-0.1, 0.1)', coef = 'scramble3'),
+                     set_prior('normal(-0.1, 0.1)', coef = 'scramble4'),
+                     set_prior('normal(-0.2, 0.1)', coef = 'level1'),
+                     set_prior('normal(-0.1, 0.1)', coef = c('level2', 'level4')) 
+                   ),
+                   save_pars = save_pars(all = TRUE), iter = 5000,
+                   file = '../models/E3_alignment_2way_noMus')
+
+nested_noScram <- brm(value ~ Musician + level + (1|sub), data = data_nested,
+                      prior = c(
+                     set_prior('normal(-0.1, 0.1)', coef = 'Musician1'),
+                     set_prior('normal(-0.2, 0.1)', coef = 'level1'),
+                     set_prior('normal(-0.1, 0.1)', coef = c('level2', 'level4')) 
+                   ),
+                   save_pars = save_pars(all = TRUE), iter = 5000,
+                   file = '../models/E3_alignment_2way_noScram')
+
+nested_noLevel <- brm(value ~ Musician + scramble + (1|sub), data = data_nested,
+                      prior = c(
+                     set_prior('normal(-0.1, 0.1)', coef = 'Musician1'),
+                     set_prior('normal(0.1, 0.1)', coef = 'scramble2'),
+                     set_prior('normal(-0.1, 0.1)', coef = 'scramble3'),
+                     set_prior('normal(-0.1, 0.1)', coef = 'scramble4')
+                   ),
+                   save_pars = save_pars(all = TRUE), iter = 5000,
+                   file = '../models/E3_alignment_2way_noLevel')
+```
+
+\newpage
+
+Model without group:
+
+```{r}
+plot(nested_noMus)
+print(summary(nested_noMus), digits = 4)
+```
+
+
+\newpage
+
+Model without condition:
+
+```{r}
+plot(nested_noScram)
+print(summary(nested_noScram), digits = 4)
+```
+
+\newpage
+
+Model without level: 
+
+```{r}
+plot(nested_noLevel)
+print(summary(nested_noLevel), digits = 4)
+```
+
+
+
+\newpage
+
+## Main effect of group
+```{r}
+BF_nested_mus <- bayes_factor(nested_3way, nested_noMus)
+print(BF_nested_mus)
+```
+
+Strong evidence against a main effect of group.
+
+
+## Main effect of condition
+```{r}
+BF_nested_scram <- bayes_factor(nested_3way, nested_noScram)
+print(BF_nested_scram)
+```
+
+Very strong evidence for a main effect of condition.
+
+## Main effect of level
+```{r}
+BF_nested_level <- bayes_factor(nested_3way, nested_noLevel)
+print(BF_nested_level)
+```
+
+Moderate evidence against a main effect of level.
+
+
+\newpage
+
+## Interactions
+
+Does adding an interaction between condition and level improve the model? (Without group)
+
+```{r}
+nested_justScram <- brm(value ~ scramble + (1|sub), data = data_nested,
+                       prior = c(
+                         set_prior('normal(0.1, 0.1)', coef = 'scramble2'),
+                         set_prior('normal(-0.1, 0.1)', coef = 'scramble3'),
+                         set_prior('normal(-0.1, 0.1)', coef = 'scramble4')
+                       ),
+                       save_pars = save_pars(all = TRUE), iter = 5000,
+                       file = '../models/E3_alignment_justScram')
+```
+
+```{r}
+plot(nested_justScram)
+print(summary(nested_justScram), digits = 4)
+```
+
+```{r, include=FALSE}
+get_prior(value ~ scramble + scramble:level + (1|sub), data = data_nested)
+```
+
+\newpage
+
+```{r}
+nested_2way_levelScram <- brm(value ~ scramble + scramble:level + (1|sub), data = data_nested,
+                       prior = c(
+                         set_prior('normal(0, 0.1)', class = 'b'), # all interactions
+                         set_prior('normal(0.1, 0.1)', coef = 'scramble2'),
+                         set_prior('normal(-0.1, 0.1)', coef = 'scramble3'),
+                         set_prior('normal(-0.1, 0.1)', coef = 'scramble4')
+                       ),
+                       save_pars = save_pars(all = TRUE), iter = 5000,
+                       file = '../models/E3_alignment_2way_levelScramInt')
+```
+
+```{r}
+plot(nested_2way_levelScram)
+print(summary(nested_2way_levelScram), digits = 4)
+```
+
+```{r}
+BF_nested_2way_levelScram <- bayes_factor(nested_2way_levelScram, nested_justScram)
+print(BF_nested_2way_levelScram)
+```
+
+Strong evidence for an interaction between condition and level.
+
+
+\newpage
+
+Check the other interactions.
+
+```{r}
+nested_justLevel <- brm(value ~ level + (1|sub), data = data_nested,
+                        prior = c(
+                          set_prior('normal(-0.2, 0.1)', coef = 'level1'),
+                          set_prior('normal(-0.1, 0.1)', coef = c('level2', 'level4'))
+                        ),
+                        save_pars = save_pars(all = TRUE), iter = 5000,
+                       file = '../models/E3_alignment_justLevel')
+```
+
+```{r, include=FALSE}
+get_prior(value ~ scramble + scramble:Musician + (1|sub), data = data_nested)
+```
+
+```{r}
+nested_2way_musScram <- brm(value ~ scramble + scramble:Musician + (1|sub), data = data_nested,
+                            prior = c(
+                              set_prior('normal(0, 0.1)', class = 'b'), # all interactions
+                              set_prior('normal(0.1, 0.1)', coef = 'scramble2'),
+                              set_prior('normal(-0.1, 0.1)', coef = 'scramble3'),
+                              set_prior('normal(-0.1, 0.1)', coef = 'scramble4')
+                            ),
+                            save_pars = save_pars(all = TRUE), iter = 5000,
+                            file = '../models/E3_alignment_2way_musScramInt')
+nested_2way_musLevel <- brm(value ~ level + level:Musician + (1|sub), data = data_nested,
+                            prior = c(
+                              set_prior('normal(0, 0.1)', class = 'b'), # all interactions
+                              set_prior('normal(-0.2, 0.1)', coef = 'level1'),
+                              set_prior('normal(-0.1, 0.1)', coef = c('level2', 'level4'))
+                            ),
+                            save_pars = save_pars(all = TRUE), iter = 5000,
+                            file = '../models/E3_alignment_2way_musLevelInt')
+```
+
+\newpage
+
+```{r}
+plot(nested_justLevel)
+print(summary(nested_justLevel), digits = 4)
+```
+
+\newpage
+
+```{r}
+plot(nested_2way_musScram)
+print(summary(nested_2way_musScram), digits = 4)
+```
+
+\newpage
+
+```{r}
+plot(nested_2way_musLevel)
+print(summary(nested_2way_musLevel), digits = 4)
+```
+
+\newpage
+
+```{r}
+BF_nested_2way_musScram <- bayes_factor(nested_2way_musScram, nested_justScram)
+print(BF_nested_2way_musScram)
+```
+
+```{r}
+BF_nested_2way_musLevel <- bayes_factor(nested_2way_musLevel, nested_justLevel)
+print(BF_nested_2way_musLevel)
+```
+
+Very strong evidence against interactions between group and condition and group and level.
+
+
+
+
+\newpage
+
+# 1B
+
+```{r}
+data1B <- filter(data, scramble == '1B')
+```
+
+```{r}
+levels1B_null <- brm(value ~ 1 + (1|sub), data = data1B,
+                     save_pars = save_pars(all = TRUE), iter = 5000,
+                     file = '../models/E3_alignment_1B_null')
+```
+
+```{r}
+plot(levels1B_null)
+print(summary(levels1B_null), digits = 4)
+```
+
+
+```{r, include=FALSE}
+get_prior(value ~ level + (1|sub), data = data1B)
+```
+
+```{r}
+levels1B <- brm(value ~ level + (1|sub), data = data1B,
+                prior = c(
+                  set_prior('normal(-0.2, 0.1)', coef = c('level1', 'level2', 'level3', 'level5')),
+                  set_prior('normal(-0.1, 0.1)', coef = c('level4', 'level7'))
+                ),
+                save_pars = save_pars(all = TRUE), iter = 5000,
+                file = '../models/E3_alignment_1B')
+```
+
+```{r}
+plot(levels1B)
+print(summary(levels1B), digits = 4)
+```
+
+```{r}
+BF_1B_level <- bayes_factor(levels1B, levels1B_null)
+print(BF_1B_level)
+```
+
+There is very strong evidence against a main effect of level.
+
+```{r}
+emm_1B <- emmeans(levels1B, specs = "level")
+summary(emm_1B)
+```
+
+All levels at chance.
+
+```{r}
+contrast(emm_1B, method = "pairwise")
+```
+
+No differences between any levels.
+
+
+\newpage
+
+# 2B
+
+```{r}
+data2B <- filter(data, scramble == '2B')
+```
+
+```{r}
+levels2B_null <- brm(value ~ 1 + (1|sub), data = data2B,
+                     save_pars = save_pars(all = TRUE), iter = 5000,
+                     file = '../models/E3_alignment_2B_null')
+```
+
+```{r}
+plot(levels2B_null)
+print(summary(levels2B_null), digits = 4)
+```
+
+
+```{r}
+levels2B <- brm(value ~ level + (1|sub), data = data2B,
+                prior = c(
+                  set_prior('normal(-0.2, 0.1)', coef = c('level1', 'level2', 'level3', 'level5')),
+                  set_prior('normal(-0.1, 0.1)', coef = c('level4', 'level7'))
+                ),
+                save_pars = save_pars(all = TRUE), iter = 5000,
+                file = '../models/E3_alignment_2B')
+```
+
+```{r}
+plot(levels2B)
+print(summary(levels2B), digits = 4)
+```
+
+```{r}
+BF_2B_level <- bayes_factor(levels2B, levels2B_null)
+print(BF_2B_level)
+```
+
+There is strong evidence against an effect of level.
+
+```{r}
+emm_2B <- emmeans(levels2B, specs = "level")
+summary(emm_2B)
+```
+
+Above chance: 2, 5
+Below chance: 16
+All others at chance
+
+```{r}
+contrast(emm_2B, method = "pairwise")
+```
+
+1 > 16, 2 > 16, 3 > 16, 4 > 16, 5 > 16, 8 > 16
+
+2 > 3
+
+
+\newpage
+
+# 8B
+
+```{r}
+data8B <- filter(data, scramble == '8B')
+```
+
+```{r}
+levels8B_null <- brm(value ~ 1 + (1|sub), data = data8B,
+                     save_pars = save_pars(all = TRUE), iter = 5000,
+                     file = '../models/E3_alignment_8B_null')
+```
+
+```{r}
+plot(levels8B_null)
+print(summary(levels8B_null), digits = 4)
+```
+
+
+```{r}
+levels8B <- brm(value ~ level + (1|sub), data = data8B,
+                prior = c(
+                  set_prior('normal(-0.2, 0.1)', coef = c('level1', 'level2', 'level3', 'level5')),
+                  set_prior('normal(-0.1, 0.1)', coef = c('level4', 'level7'))
+                ),
+                save_pars = save_pars(all = TRUE), iter = 5000,
+                file = '../models/E3_alignment_8B')
+```
+
+```{r}
+plot(levels8B)
+print(summary(levels8B), digits = 4)
+```
+
+```{r}
+BF_8B_level <- bayes_factor(levels8B, levels8B_null)
+print(BF_8B_level)
+```
+
+There is very strong evidence for an effect of level.
+
+```{r}
+emm_8B <- emmeans(levels8B, specs = "level")
+summary(emm_8B)
+```
+
+Above chance: 4, 8, 16
+At chance: 1, 2, 3, 5
+
+
+```{r}
+contrast(emm_8B, method = "pairwise")
+```
+
+2 > 3, 2 > 5 
+
+4 > 1, 4 > 2, 4 > 3, 4 > 5
+
+8 > 1, 8 > 2, 8 > 3, 8 > 4, 8 > 5, 8 > 16
+
+16 > 1, 16 > 3, 16 > 5
+
+Phrase level greater than all others. Structurally relevant levels (2,4,8,16) are consistently greater than structurally irrelevant levels (3,5), BUT participants align to longer SRL (4,8) more than 2 - consistent with lower rate of response
+
+\newpage
+
+# Intact
+
+```{r}
+dataI <- filter(data, scramble == 'Intact')
+```
+
+
+```{r}
+levelsI_null <- brm(value ~ 1 + (1|sub), data = dataI,
+                     save_pars = save_pars(all = TRUE), iter = 5000,
+                     file = '../models/E3_alignment_Intact_null')
+```
+
+```{r}
+plot(levelsI_null)
+print(summary(levelsI_null), digits = 4)
+```
+
+
+```{r}
+levelsI <- brm(value ~ level + (1|sub), data = dataI,
+                prior = c(
+                  set_prior('normal(-0.2, 0.1)', coef = c('level1', 'level2', 'level3', 'level5')),
+                  set_prior('normal(-0.1, 0.1)', coef = c('level4', 'level7'))
+                ),
+                save_pars = save_pars(all = TRUE), iter = 5000,
+                file = '../models/E3_alignment_Intact')
+```
+
+```{r}
+plot(levelsI)
+print(summary(levelsI), digits = 4)
+```
+
+```{r}
+BF_I_level <- bayes_factor(levelsI, levelsI_null)
+print(BF_I_level)
+```
+
+There is strong evidence against an effect of level.
+
+```{r}
+emm_I <- emmeans(levelsI, specs = "level")
+summary(emm_I)
+```
+
+Only level above chance is 8-bar level.
+
+```{r}
+contrast(emm_I, method = "pairwise")
+```
+
+8 > 3, 8 > 4, 8 > 5
+
+\newpage
+
+# 8B vs Intact, 8 vs 16
+
+```{r}
+data_longTS <- data %>%
+  filter(scramble %in% c('Intact', '8B')) %>%
+  filter(level %in% c('8','16')) %>%
+  mutate(scramble = factor(scramble, levels = c('Intact','8B')),
+         level = factor(level, levels = c('8', '16'))) 
+```
+
+```{r}
+contrasts(data_longTS$level) <- contr.treatment(2)
+```
+
+```{r}
+data_longTS_M <- filter(data_longTS, Musician == 'Yes')
+data_longTS_NM <- filter(data_longTS, Musician == 'No')
+```
+
+
+```{r, include=FALSE}
+get_prior(value ~ scramble*level + (1|sub), data_longTS_M)
+```
+
+```{r}
+longTS_M <- brm(value ~ scramble + level + (1|sub), data = data_longTS_M,
+                prior = set_prior('normal(0, 0.1)', class = 'b'),
+                save_pars = save_pars(all = TRUE), iter = 5000,
+                file = '../models/E3_alignment_longTimescales_mus')
+```
+
+```{r}
+plot(longTS_M)
+print(summary(longTS_M), digits = 4)
+```
+
+
+```{r}
+longTS_M_int <- brm(value ~ scramble*level + (1|sub), data = data_longTS_M,
+                prior = set_prior('normal(0, 0.1)', class = 'b'),
+                save_pars = save_pars(all = TRUE), iter = 5000,
+                file = '../models/E3_alignment_longTimescales_musInt')
+```
+
+```{r}
+plot(longTS_M_int)
+print(summary(longTS_M_int), digits = 4)
+```
+
+```{r}
+BF_longM <- bayes_factor(longTS_M_int, longTS_M)
+print(BF_longM)
+```
+
+There is weak evidence for an interaction for musicians.
+
+\newpage
+
+```{r}
+longTS_NM <- brm(value ~ scramble + level + (1|sub), data = data_longTS_NM,
+                prior = set_prior('normal(0, 0.1)', class = 'b'),
+                save_pars = save_pars(all = TRUE), iter = 5000,
+                file = '../models/E3_alignment_longTimescales_nonmus')
+```
+
+```{r}
+plot(longTS_NM)
+print(summary(longTS_NM), digits = 4)
+```
+
+
+```{r}
+longTS_NM_int <- brm(value ~ scramble*level + (1|sub), data = data_longTS_NM,
+                prior = set_prior('normal(0, 0.1)', class = 'b'),
+                save_pars = save_pars(all = TRUE), iter = 5000,
+                file = '../models/E3_alignment_longTimescales_nonmusInt')
+```
+
+```{r}
+plot(longTS_NM_int)
+print(summary(longTS_NM_int), digits = 4)
+```
+
+```{r}
+BF_longNM <- bayes_factor(longTS_NM_int, longTS_NM)
+print(BF_longNM)
+```
+
+There is weak evidence against an interaction for musicians.
