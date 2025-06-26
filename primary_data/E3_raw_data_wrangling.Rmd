@@ -2,7 +2,9 @@
 title: "E3 data wrangling"
 author: "R. Cassano-Coleman"
 date: "`r Sys.Date()`"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 This notebook combines and wrangles data for experiment 3.
@@ -37,7 +39,6 @@ main_3A <- raw_3A %>%
                                   ifelse(!is.na(scramble_open_3), scramble_open_3, NA)))) %>%
   select(c(exp_subject_id, Trial_Id, Task_Name, participant_spacePress2, scramble)) %>%
 
-
   # add group info
   left_join(., groups_3A, by = join_by('exp_subject_id')) %>%
   relocate(Musician, .after = exp_subject_id) %>%
@@ -71,16 +72,14 @@ main_3A %<>%
   rename(responses = participant_spacePress2_2) %>%
 
   # transform response column into timestamp representation
-  # first, remove NA rows
-  filter(!is.na(responses)) %>%
-  # replace 'values=' and " with an empty string
-  mutate(responses = str_replace(responses, 'values=', '')) %>%
-  mutate(responses = str_replace(responses, '"', '')) %>%
+  # first, replace any NA rows with 'values="' so all trials with no responses are consistent
+  mutate(responses = ifelse(is.na(responses), 'values="', responses)) %>%
   # give each timestamp its own row
   separate_longer_delim(responses, delim = ';') %>%
+  # some responses have values=X instead of values=;X
+  separate_longer_delim(responses, delim = '=') %>%
   filter(responses != '') %>%
-  # convert from milliseconds to seconds
-  mutate(responses = as.numeric(responses) / 1000) %>%
+  filter(responses != '"') %>%
 
   # rename column for analysis
   rename(value = responses) %>%
@@ -93,13 +92,30 @@ main_3A %<>%
   relocate(stim_num, .after = scramble)
 ```
 
+Check for data completeness: every subject should have 2 trials per condition, but will have varying numbers of timestamps.
 
-Compute rate.
+```{r}
+main_3A %>%
+  group_by(exp_subject_id) %>%
+  summarize(conds = unique(scramble)) %>%
+  summarize(n_conds = n())
+# R isn't happy but that's ok
+
+# looking at it another way...
+main_3A %>%
+  group_by(exp_subject_id, scramble) %>%
+  summarize(stimuli = unique(stim_num)) %>%
+  group_by(exp_subject_id) %>%
+  summarize(n_trials = n())
+```
+
+
+At this point, every trial has an extra row ('values="'), so subtract 1 from the calculation of rate.
 
 ```{r}
 rate_3A <- main_3A %>%
   group_by(exp_subject_id, Musician, stimulus_set, scramble, stim_num) %>%
-  summarize(rate = (n() / 64) * 60)
+  summarize(rate = ((n() - 1) / 64) * 60)
 ```
 
 Check for rates > 30
@@ -113,8 +129,17 @@ Average over all trials in a condition.
 ```{r}
 rate_3A %<>%
   group_by(exp_subject_id, Musician, stimulus_set, scramble) %>%
-  summarize(mean_response_rate = mean(rate)) %>%
-  filter(mean_response_rate < 30)
+  summarize(mean_response_rate = mean(rate)) #%>%
+  #filter(mean_response_rate < 30)
+```
+
+Finish cleaning up those timestamps, including removing the extra rows
+```{r}
+main_3A %<>%
+  filter(value != 'values') %>%
+  mutate(value = str_replace(value, '"', '')) %>%
+  # convert from milliseconds to seconds
+  mutate(value = as.numeric(value) / 1000)
 ```
 
 
@@ -185,11 +210,24 @@ subset_3B <- main_3B %>%
   relocate(Musician, .after = exp_subject_id) %>%
   filter(!is.na(Musician)) %>%
   
-  # stimulus length
-  
   # remove stimulus 2
-  filter(stim_num != '2') %>%
+  filter(stim_num != '2')
+```
 
+```{r}
+zeroRate_3B <- subset_3B %>%
+  mutate(responses = ifelse(is.na(responses), 'values="', responses)) %>%
+  filter(responses == 'values="') %>%
+  mutate(rate = 0,
+         responses = NULL) %>%
+  
+  # add stimulus set = 1 for when we combine
+  mutate(stimulus_set = 1, .after = Musician)
+```
+
+
+```{r}
+subset_3B %<>%
   # transform response column into timestamp representation
   # first, remove NA rows
   filter(!is.na(responses)) %>%
@@ -237,6 +275,11 @@ Compute rate and exclude any cases where rate is greater than 1 response every 2
 rate_3B <- subset_3B %>% 
   group_by(exp_subject_id, Musician, stimulus_set, scramble, stim_num) %>%
   summarize(rate = (n() / 66) * 60) %>%
+  bind_rows(., zeroRate_3B)
+```
+
+```{r}
+rate_3B %<>%
   # average over both runs for each subject
   group_by(exp_subject_id, Musician, stimulus_set, scramble) %>%
   summarize(mean_response_rate = mean(rate))
@@ -259,18 +302,13 @@ Check for any NAs
 rate_combined %>% group_by(exp_subject_id) %>% summarize(count = n())
 ```
 
-Missing data: 
-- has data for 1 condition: 355341, 356778, 361615, 363111 (12)
-- has data for 2 conditions: 354009, 360247 (4)
-- has data for 3 conditions: 334739, 360430, 385662, 393253, 610499 (5)
-We don't do any paired comparisons later, so this is ok.
-
+No missing data!
 
 Make things into factors so we don't have to do it later.
 
 ```{r}
 rate_combined %<>%
-  mutate(subexp_subject_id = factor(exp_subject_id),
+  mutate(exp_subject_id = factor(exp_subject_id),
          Musician = factor(Musician, levels = c('Yes', 'No')),
          stimulus_set = factor(stimulus_set),
          scramble = factor(scramble, levels = c('Intact', '8B', '2B', '1B'))
