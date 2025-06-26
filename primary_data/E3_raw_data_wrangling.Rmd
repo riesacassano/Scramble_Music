@@ -250,11 +250,23 @@ rate_3A$stimulus_set <- as.numeric(rate_3A$stimulus_set) # to match 3B
 rate_combined <- bind_rows(rate_3A, rate_3B)
 ```
 
+Check for any NAs
+```{r}
+rate_combined %>% group_by(exp_subject_id) %>% summarize(count = n())
+```
+
+Missing data: 
+- has data for 1 condition: 355341, 356778, 361615, 363111 (12)
+- has data for 2 conditions: 354009, 360247 (4)
+- has data for 3 conditions: 334739, 360430, 385662, 393253, 610499 (5)
+This explains the difference between the reference (380 rows) and what I just got (359 rows). Need to compute the means without dropping NAs.
+
+
 Make things into factors so we don't have to do it later.
 
 ```{r}
 rate_combined %<>%
-  mutate(#subexp_subject_id = factor(exp_subject_id),
+  mutate(subexp_subject_id = factor(exp_subject_id),
          Musician = factor(Musician, levels = c('Yes', 'No')),
          stimulus_set = factor(stimulus_set),
          scramble = factor(scramble, levels = c('Intact', '8B', '2B', '1B'))
