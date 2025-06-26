@@ -35,7 +35,7 @@ main_3A <- raw_3A %>%
   mutate(scramble = ifelse(!is.na(scramble_cat_4), scramble_cat_4, 
                            ifelse(!is.na(scramble_level), scramble_level,
                                   ifelse(!is.na(scramble_open_3), scramble_open_3, NA)))) %>%
-  select(c(exp_subject_id, Trial_Nr, Task_Name, participant_spacePress2, scramble)) %>%
+  select(c(exp_subject_id, Trial_Id, Task_Name, participant_spacePress2, scramble)) %>%
 
 
   # add group info
@@ -86,7 +86,11 @@ main_3A %<>%
   rename(value = responses) %>%
   
   # move scramble
-  relocate(scramble, .after = stimulus_set)
+  relocate(scramble, .after = stimulus_set) %>%
+  
+  # rename Trial_Id to be stim_num to be consistent with 3B
+  rename(stim_num = Trial_Id) %>%
+  relocate(stim_num, .after = scramble)
 ```
 
 
@@ -94,7 +98,7 @@ Compute rate.
 
 ```{r}
 rate_3A <- main_3A %>%
-  group_by(exp_subject_id, Musician, stimulus_set, scramble, Trial_Nr) %>%
+  group_by(exp_subject_id, Musician, stimulus_set, scramble, stim_num) %>%
   summarize(rate = (n() / 64) * 60)
 ```
 
