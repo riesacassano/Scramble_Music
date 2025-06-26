@@ -55,4 +55,4 @@ for col in range(2):
     ax[col].legend(fontsize=16)
 
 plt.show()
-#plt.savefig('alignment.png', dpi=500)
+#plt.savefig('../figures/Fig4_alignment.png', dpi=500)
