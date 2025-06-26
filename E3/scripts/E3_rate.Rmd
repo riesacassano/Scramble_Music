@@ -9,14 +9,13 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-library(tidyverse)
-library(magrittr)
-library(rstatix)
+library(tidyverse) # version 2.0.0
+library(magrittr) # version 2.0.3
+library(rstatix) # version 0.7.2
 
-library(brms)
-library(tidybayes)
-library(bayestestR)
-library(emmeans)
+library(brms) # version 2.22.0
+library(bayestestR) # version 0.15.0
+library(emmeans) # version 1.10.0
 ```
 
 This notebook takes response rates by subject, log-transforms them, and runs a Bayesian version of a mixed effects model to replace the non-parametric ANOVA-type test that is currently reported in the paper.
