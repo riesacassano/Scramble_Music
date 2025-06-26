@@ -222,4 +222,27 @@ None of these cases have rates > 30.
 
 # Combine
 
+## Rate
+
+```{r}
+rate_3A$stimulus_set <- as.numeric(rate_3A$stimulus_set) # to match 3B
+rate_combined <- bind_rows(rate_3A, rate_3B)
+```
+
+Make things into factors so we don't have to do it later.
+
+```{r}
+rate_combined %<>%
+  mutate(#subexp_subject_id = factor(exp_subject_id),
+         Musician = factor(Musician, levels = c('Yes', 'No')),
+         stimulus_set = factor(stimulus_set),
+         scramble = factor(scramble, levels = c('Intact', '8B', '2B', '1B'))
+         )
+```
+
+
+
+## Timestamps
+
+subset_3B
 
