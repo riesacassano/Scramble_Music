@@ -2,7 +2,9 @@
 title: "E3 rate (Bayes version)"
 author: "R. Cassano-Coleman"
 date: "`r Sys.Date()`"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -42,6 +44,8 @@ Set Intact as reference level.
 contrasts(data$scramble) <- contr.treatment(4)
 ```
 
+\newpage
+
 Check normality of the true response rate data. (Ignoring stimulus set.)
 
 ```{r}
@@ -61,8 +65,9 @@ data %>%
   ylab('Response Rate (per Minute)') +
   scale_fill_discrete(name="", labels=c('Musicians', 'Non-musicians')) +
   theme(legend.text = element_text(size = 12))
-#ggsave('rate.png', width = 7, height = 5)
 ```
+
+\newpage
 
 Log-transform the rates and check for normality.
 
@@ -77,7 +82,7 @@ data %>%
   shapiro_test(log_rate)
 ```
 
-The musician data is still non-normal. Visualize:
+Some of these are worse than others. Visualize:
 
 ```{r}
 data %>%
@@ -97,6 +102,7 @@ It seems like this lack of normality is driven by the zero rates.
 
 
 
+\newpage
 
 ```{r}
 get_prior(log_rate ~ Musician + scramble + (1|exp_subject_id), data = data)
@@ -114,13 +120,18 @@ these_priors <- c(
 ```{r}
 brm_log_rate <- brm(log_rate ~ Musician + scramble + (1|exp_subject_id), data = data,
                     prior = these_priors,
-                    save_pars = save_pars(all = TRUE), iter = 5000)
+                    save_pars = save_pars(all = TRUE), iter = 5000,
+                    file = '../models/E3_log_rate')
 ```
+
+\newpage
 
 ```{r}
 plot(brm_log_rate)
 print(summary(brm_log_rate), digits = 4)
 ```
+
+\newpage
 
 ```{r}
 emm_log_rate <- emmeans(brm_log_rate, specs = c("scramble", "Musician"))
@@ -136,6 +147,8 @@ summary(emm_log_rate_s)
 contrast(emm_log_rate_s, method = "pairwise")
 ```
 
+\newpage
+
 ```{r}
 log_rate_BF <- describe_posterior(brm_log_rate,
                                   estimate = "median", dispersion = TRUE,
@@ -144,12 +157,15 @@ log_rate_BF <- describe_posterior(brm_log_rate,
 print(log_rate_BF, digits = 4)
 ```
 
+\newpage
+
 Compare the full model to a model without scramble condition.
 
 ```{r}
 brm_log_rate_null <- brm(log_rate ~ Musician + (1|exp_subject_id), data = data,
-                         prior = set_prior('normal(0, 1)', class = 'b'),
-                         save_pars = save_pars(all = TRUE), iter = 5000)
+                         prior = set_prior('normal(0, 0.5)', class = 'b'),
+                         save_pars = save_pars(all = TRUE), iter = 5000,
+                         file = '../models/E3_log_rate_null')
 ```
 
 ```{r}
@@ -162,3 +178,28 @@ BF_log_rate <- bayes_factor(brm_log_rate, brm_log_rate_null)
 print(BF_log_rate)
 ```
 
+\newpage
+
+Visualize with posterior estimates and 95% CrI 
+
+```{r}
+posterior_est <- as.data.frame(emm_log_rate)
+```
+
+```{r}
+ggplot() +
+  geom_col(aes(x = scramble, y = exp(emmean), fill = Musician), data = posterior_est,
+           position = "dodge") +
+  geom_errorbar(aes(x = scramble, ymin = exp(lower.HPD), ymax = exp(upper.HPD), fill = Musician), 
+                data = posterior_est, position = position_dodge(width = 0.9), width = 0.2) +
+  geom_point(aes(x = scramble, y = mean_response_rate, fill = Musician), data = data, 
+             position = position_jitterdodge(dodge.width = 0.9, jitter.width = 0.1), alpha = 0.1) +
+  theme_gray(base_size = 16) +
+  scale_x_discrete(limits = rev) +
+  xlab('Scramble Level') +
+  ylab('Response Rate (per Minute)') +
+  scale_fill_discrete(name="", labels=c('Musicians', 'Non-musicians')) +
+  theme(legend.text = element_text(size = 12))
+
+ggsave('../figures/Fig3_rate.png', width = 7, height = 5)
+```
