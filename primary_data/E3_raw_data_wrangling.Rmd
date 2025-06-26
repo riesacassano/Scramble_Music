@@ -260,6 +260,12 @@ rate_combined %<>%
          )
 ```
 
+```{r}
+sub_check <- rate_combined %>%
+  select(exp_subject_id) %>%
+  left_join(ref_subs, ., by = join_by('ref_subs' == 'exp_subject_id')) %>%
+  filter(is.na(Musician) | is.na(stimulus_set))
+```
 
 
 ## Timestamps
