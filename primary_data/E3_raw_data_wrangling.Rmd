@@ -23,6 +23,7 @@ Load dataset 3A and the musician/non-musician info.
 ```{r}
 raw_3A <- read_csv('raw_combined_E3A.csv', show_col_types = FALSE)
 groups_3A <- read_excel('../E3/sub_ids_3A.xlsx')
+addl_subs <- read_excel('subs_additional_E3A.xlsx')
 ```
 
 Keep only the main task.
@@ -34,10 +35,29 @@ main_3A <- raw_3A %>%
   mutate(scramble = ifelse(!is.na(scramble_cat_4), scramble_cat_4, 
                            ifelse(!is.na(scramble_level), scramble_level,
                                   ifelse(!is.na(scramble_open_3), scramble_open_3, NA)))) %>%
-  select(c(exp_subject_id, Task_Name, participant_spacePress2, scramble)) %>%
+  select(c(exp_subject_id, Trial_Nr, Task_Name, participant_spacePress2, scramble)) %>%
   # capitalize Intact
   mutate(scramble = ifelse(scramble == 'intact', 'Intact', scramble)) %>%
 
+  # add group info
+  left_join(., groups_3A, by = join_by('exp_subject_id')) %>%
+  relocate(Musician, .after = exp_subject_id) %>%
+  # subjects who are left out did stimulus set 2, which is highly overlapping with stimulus set 1
+  filter(!is.na(Musician))
+```
+
+Add the four additional subjects.
+
+```{r}
+main_3A <- addl_subs %>%
+  select(colnames(main_3A)) %>%
+  bind_rows(main_3A, .)
+```
+
+Additional wrangling...
+  
+```{r}
+main_3A %<>%
   # the number in Task_Name encodes stimulus set
   separate_wider_delim(Task_Name, delim = '_', names_sep = '_') %>% #, names = c(NULL, 'stimulus_set')) # not sure why this didn't work
   mutate(Task_Name_1 = NULL) %>%
