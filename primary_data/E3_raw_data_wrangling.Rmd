@@ -259,7 +259,7 @@ Missing data:
 - has data for 1 condition: 355341, 356778, 361615, 363111 (12)
 - has data for 2 conditions: 354009, 360247 (4)
 - has data for 3 conditions: 334739, 360430, 385662, 393253, 610499 (5)
-This explains the difference between the reference (380 rows) and what I just got (359 rows).
+We don't do any paired comparisons later, so this is ok.
 
 
 Make things into factors so we don't have to do it later.
@@ -273,6 +273,9 @@ rate_combined %<>%
          )
 ```
 
+```{r}
+write_csv(rate_combined, '../E3/response_rate_by_sub.csv')
+```
 
 ## Timestamps
 
