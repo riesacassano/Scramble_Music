@@ -278,10 +278,19 @@ rate_combined %<>%
 ```
 
 ```{r}
-write_csv(rate_combined, '../E3/response_rate_by_sub.csv')
+write_csv(rate_combined, '../E3/data/response_rate_by_sub.csv')
 ```
 
 ## Timestamps
 
-subset_3B
+```{r}
+# make numeric things numeric...
+main_3A$stimulus_set <- as.numeric(main_3A$stimulus_set) # to match 3B
+subset_3B$stim_num <- as.numeric(subset_3B$stim_num) # to match 3A
+# combine
+timestamps_combined <- bind_rows(main_3A, subset_3B)
+```
 
+```{r}
+write_csv(timestamps_combined, '../E3/data/timestamps_filtered_long.csv')
+```
