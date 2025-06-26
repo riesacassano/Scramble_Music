@@ -36,8 +36,7 @@ main_3A <- raw_3A %>%
                            ifelse(!is.na(scramble_level), scramble_level,
                                   ifelse(!is.na(scramble_open_3), scramble_open_3, NA)))) %>%
   select(c(exp_subject_id, Trial_Nr, Task_Name, participant_spacePress2, scramble)) %>%
-  # capitalize Intact
-  mutate(scramble = ifelse(scramble == 'intact', 'Intact', scramble)) %>%
+
 
   # add group info
   left_join(., groups_3A, by = join_by('exp_subject_id')) %>%
@@ -51,7 +50,9 @@ Add the four additional subjects.
 ```{r}
 main_3A <- addl_subs %>%
   select(colnames(main_3A)) %>%
-  bind_rows(main_3A, .)
+  bind_rows(main_3A, .) %>%
+  # capitalize Intact
+  mutate(scramble = ifelse(scramble == 'intact', 'Intact', scramble))
 ```
 
 Additional wrangling...
