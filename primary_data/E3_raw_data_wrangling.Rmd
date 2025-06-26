@@ -69,9 +69,28 @@ main_3A <- raw_3A %>%
 ```
 
 
+Compute rate.
 
+```{r}
+rate_3A <- main_3A %>%
+  group_by(exp_subject_id, Musician, stimulus_set, scramble, Trial_Nr) %>%
+  summarize(rate = (n() / 64) * 60)
+```
 
+Check for rates > 30
 
+```{r}
+rate_3A %>%
+  filter(rate > 30)
+```
+
+Average over all trials in a condition.
+```{r}
+rate_3A %<>%
+  group_by(exp_subject_id, Musician, stimulus_set, scramble) %>%
+  summarize(mean_response_rate = mean(rate)) %>%
+  filter(mean_response_rate < 30)
+```
 
 
 
