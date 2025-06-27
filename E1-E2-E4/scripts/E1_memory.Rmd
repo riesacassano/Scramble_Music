@@ -1,0 +1,43 @@
+---
+title: "E1 memory"
+author: "R. Cassano-Coleman"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse) # version 2.0.0
+library(magrittr) # version 2.0.3
+
+library(brms) # version 2.22.0
+library(bayestestR) # version 0.15.0
+library(emmeans) # version 1.10.0
+```
+
+This notebook analyzes memory using Bayesian binomial generalized linear mixed effects models (GLMMs).
+
+
+# Set up
+
+```{r}
+set.seed(15000)
+```
+
+```{r}
+data <- 
+```
+
+## Priors
+
+# Main analysis
+
+
+## Figure 2A
+
+
+
+# Years of experience 
+
+## Figure S1A
+
