@@ -1,5 +1,5 @@
 ---
-title: "E3 rate (Bayes version)"
+title: "E3 rate"
 author: "R. Cassano-Coleman"
 date: "`r Sys.Date()`"
 output:
