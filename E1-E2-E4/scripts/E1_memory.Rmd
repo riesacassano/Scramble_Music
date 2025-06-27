@@ -202,30 +202,39 @@ Moderate evidence against an interaction between group and condition.
 
 ## Figure 2A
 
-Visualize posterior distributions on the scale of accuracy.
-
-Visualize with posterior estimates and 95% CrI 
+Create a helper function for the conversion from log odds to probability.
 
 ```{r}
-posterior_est <- as.data.frame(emm_log_rate)
+calculate_prob_from_logodds <- function(logodds) {
+  return(exp(logodds) / (1 + exp(logodds)))
+}
+```
+
+Visualize with posterior estimates and 95% CrI on the scale of accuracy.
+
+```{r}
+posterior_est <- as.data.frame(emm_mus_scram_ms)
 ```
 
 ```{r}
 ggplot() +
-  geom_col(aes(x = scramble, y = exp(emmean), fill = Musician), data = posterior_est,
+  geom_col(aes(x = scramble, y = calculate_prob_from_logodds(emmean), fill = Musician), 
+           data = posterior_est,
            position = "dodge") +
-  geom_errorbar(aes(x = scramble, ymin = exp(lower.HPD), ymax = exp(upper.HPD), fill = Musician), 
+  geom_errorbar(aes(x = scramble, 
+                    ymin = calculate_prob_from_logodds(lower.HPD), 
+                    ymax = calculate_prob_from_logodds(upper.HPD), 
+                    fill = Musician), 
                 data = posterior_est, position = position_dodge(width = 0.9), width = 0.2) +
-  geom_point(aes(x = scramble, y = mean_response_rate, fill = Musician), data = data, 
-             position = position_jitterdodge(dodge.width = 0.9, jitter.width = 0.1), alpha = 0.1) +
+  geom_hline(yintercept = 0.5, linetype = "dotted", color = "black", linewidth = 1) +
   theme_gray(base_size = 16) +
   scale_x_discrete(limits = rev) +
   xlab('Scramble Level') +
-  ylab('Response Rate (per Minute)') +
+  ylab('Posterior Distribution of\nProportion Correct (Memory)') +
   scale_fill_discrete(name="", labels=c('Musicians', 'Non-musicians')) +
   theme(legend.text = element_text(size = 12))
 
-ggsave('../figures/Fig3_rate.png', width = 7, height = 5)
+ggsave('../figures/Fig2A_memory.png', width = 7, height = 5)
 ```
 
 
