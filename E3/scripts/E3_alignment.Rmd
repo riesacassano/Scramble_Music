@@ -1,5 +1,5 @@
 ---
-title: "E3 alignment (Bayes version)"
+title: "E3 alignment"
 author: "R. Cassano-Coleman"
 date: "`r Sys.Date()`"
 output:
