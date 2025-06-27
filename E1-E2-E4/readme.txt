@@ -1,6 +1,6 @@
 Experiments 1 (Memory), 2 (Prediction), 4 (Categorization) readme
 
-This folder contains the processed data and scripts needed to generate figures 2, 5, 6, and S1 and E1, E2, and E4 results.
+This folder contains the processed data and scripts needed to generate figures 2, 5, 6, and S1, and E1, E2, and E4 results.
 
 `sub_ids.xlsx` contains the Labvanced IDs for the participants who completed the memory, prediction, and categorization tasks, as well as whether they were a musician or non-musician.
 
@@ -16,6 +16,12 @@ Data:
 
 Scripts:
 
-`analysis.R` takes `data.xlsx` and generates figures 2A (memory), 2B (prediction), 5 (categorization), S1, and ANOVA results.
+`E1_memory.pdf` takes `data/memory.csv`, runs the analysis, and generates figures 2A and S1A.
 
-`confusion_matrix.R` generates figure 6 (confusion matrices).
+Similarly, `E2_prediction.pdf` takes `data/prediction.csv`, runs the analysis, and generates figures 2B and S1B.
+
+`E4_categorization.pdf` takes `data/categorization.csv`, runs the analysis, and generates figures 5 and S1C.
+
+All three notebooks are knit to PDFs so you can see the code, even if you don't want to run it yourself.
+
+`E4_confusion_matrix.R` generates figure 6 (confusion matrices).
