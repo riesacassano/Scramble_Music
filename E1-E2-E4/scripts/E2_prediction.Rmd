@@ -2,7 +2,9 @@
 title: "E2 prediction"
 author: "R. Cassano-Coleman"
 date: "`r Sys.Date()`"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -410,6 +412,8 @@ yrs_null_BF <- describe_posterior(years_mus,
                                   test = c("bayes_factor"))
 print(yrs_null_BF, digits = 4)
 ```
+
+Strong evidence against an effect of years of musical experience.
 
 \newpage
 
