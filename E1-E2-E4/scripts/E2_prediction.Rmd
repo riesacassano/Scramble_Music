@@ -247,6 +247,31 @@ There is technically no "right" answer, so performance in the 1B condition shoul
 data1B <- filter(data, scramble == '1B')
 ```
 
+```{r}
+get_prior(response ~ 1 + (1 | exp_subject_id), data = data1B)
+```
+
+(Leave the default prior for this intercept.)
+
+```{r}
+only1B <- brm(response ~ 1 + (1 | exp_subject_id), data = data1B,
+              family = bernoulli(),
+              save_pars = save_pars(all = TRUE), iter = 5000,
+              file = '../models/E2_only1B')
+```
+
+```{r}
+plot(only1B)
+print(summary(only1B), digits = 4)
+```
+
+Is intercept different from 0?
+```{r}
+bf_pointnull(only1B, null = 0)
+```
+
+There is strong evidence that performance in the 1B condition is at chance.
+
 
 \newpage
 
@@ -257,6 +282,57 @@ The main thing here is to see if the interaction we see between group and condit
 ```{r}
 data_no1B <- filter(data, scramble != '1B')
 ```
+
+```{r}
+get_prior(response ~ Musician + scramble + (1 | exp_subject_id), data = data_no1B)
+```
+
+```{r}
+no1B <- brm(response ~ Musician + scramble + (1 | exp_subject_id), data = data_no1B,
+            family = bernoulli(),
+            prior = c(
+              prior_intercept, prior_mus, set_prior('normal(-0.1, 1)', coef = 'scramble1')
+              ),
+            save_pars = save_pars(all = TRUE), iter = 5000,
+            file = '../models/E2_no1B')
+```
+
+```{r}
+plot(no1B)
+print(summary(no1B), digits = 4)
+```
+
+
+
+```{r}
+get_prior(response ~ Musician*scramble + (1 | exp_subject_id), data = data_no1B)
+```
+
+```{r}
+no1B_int <- brm(response ~ Musician*scramble + (1 | exp_subject_id), data = data_no1B,
+                family = bernoulli(),
+                prior = c(
+                  prior_intercept, prior_mus, 
+                  set_prior('normal(-0.1, 1)', coef = 'scramble1'),
+                  set_prior('normal(0, 1)', coef = 'Musician1:scramble1')
+                  ),
+                save_pars = save_pars(all = TRUE), iter = 5000,
+                file = '../models/E2_no1B_int')
+```
+
+
+```{r}
+plot(no1B_int)
+print(summary(no1B_int), digits = 4)
+```
+
+```{r}
+BF_no1B_int <- bayes_factor(no1B_int, no1B)
+print(BF_no1B_int)
+```
+
+Still moderate evidence against an interaction between group and condition.
+
 
 \newpage
 
