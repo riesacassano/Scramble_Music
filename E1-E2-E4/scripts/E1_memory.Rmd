@@ -196,7 +196,7 @@ print(summary(mus_scram_int), digits = 4)
 BF_int <- bayes_factor(mus_scram_int, mus_scram)
 print(BF_int)
 ```
-Moderate evidence against an interaction between group and condition.
+Strong evidence against an interaction between group and condition.
 
 \newpage
 
@@ -243,7 +243,96 @@ ggsave('../figures/Fig2A_memory.png', width = 7, height = 5)
 
 # Years of experience 
 
+Keep only the subjects for which we have years of experience data and average accuracy per condition.
+```{r}
+yrs_exp <- data %>% 
+  filter(!is.na(yrs_mus_exp)) %>%
+  group_by(exp_subject_id, scramble, yrs_mus_exp) %>%
+  summarize(count = n(),
+            n_correct = sum(response), 
+            accuracy = n_correct / count)
+```
+
 ## Priors
+
+For this analysis, we're operating on the scale of accuracy. Because we don't see ceiling effects (i.e. participants aren't getting too close to perfect accuracy), a linear model is appropriate enough.
+
+```{r}
+these_priors <- c(
+  set_prior('normal(0.75, 0.1)', class = 'Intercept'),
+  set_prior('normal(-0.1, 0.1)', coef = 'scramble2'),
+  set_prior('normal(-0.2, 0.1)', coef = 'scramble3'),
+  set_prior('normal(0, 0.1)', coef = 'yrs_mus_exp')
+)
+```
+
+\newpage
+
+## Main model
+
+```{r}
+years_mus_scram <- brm(accuracy ~ scramble + yrs_mus_exp + (1|exp_subject_id), data = yrs_exp,
+                   prior = these_priors,
+                   save_pars = save_pars(all = TRUE), iter = 5000,
+                   file = '../models/E1_years')
+```
+
+```{r}
+plot(years_mus_scram)
+print(summary(years_mus_scram), digits = 4)
+```
+
+## Null model (for plotting purposes)
+
+```{r}
+years_mus <- brm(accuracy ~ yrs_mus_exp + (1|exp_subject_id), data = yrs_exp,
+                 prior = c(
+                   set_prior('normal(0.75, 0.1)', class = 'Intercept'),
+                   set_prior('normal(0, 0.1)', coef = 'yrs_mus_exp')),
+                 save_pars = save_pars(all = TRUE), iter = 5000,
+                 file = '../models/E1_years_null')
+```
+
+```{r}
+plot(years_mus)
+print(summary(years_mus), digits = 4)
+```
+
+\newpage
+
+```{r}
+yrs_BF <- describe_posterior(years_mus_scram,
+                             estimate = "median", dispersion = TRUE,
+                             ci = .95, ci_method = "HDI",
+                             test = c("bayes_factor"))
+print(yrs_BF, digits = 4)
+```
+
+```{r}
+yrs_null_BF <- describe_posterior(years_mus,
+                                  estimate = "median", dispersion = TRUE,
+                                  ci = .95, ci_method = "HDI",
+                                  test = c("bayes_factor"))
+print(yrs_null_BF, digits = 4)
+```
+
+\newpage
 
 ## Figure S1A
 
+```{r}
+yrs_exp %>%
+  group_by(exp_subject_id, yrs_mus_exp) %>%
+  summarize(mean_acc = mean(accuracy)) %>%
+  ggplot(aes(yrs_mus_exp, mean_acc)) +
+  geom_point() +
+  geom_abline(intercept = yrs_null_BF$Median[1], slope = yrs_null_BF$Median[2],
+              color = '#F8766D', linewidth = 1, alpha = 0.8) +
+  xlab('Years of Musical Experience') +
+  ylab('Overall Proportion Correct (Memory)') +
+  scale_x_continuous(breaks = seq(5,30,5)) +
+  scale_y_continuous(breaks = seq(0.4, 1, 0.1)) +
+  ylim(0.4, 1) +
+  theme_gray(base_size = 16)
+ggsave('../figures/FigS1A_memory.png', width = 5, height = 5)
+```
