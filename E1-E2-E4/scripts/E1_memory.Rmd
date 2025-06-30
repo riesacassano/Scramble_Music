@@ -229,6 +229,7 @@ ggplot() +
   geom_hline(yintercept = 0.5, linetype = "dotted", color = "black", linewidth = 1) +
   theme_gray(base_size = 16) +
   scale_x_discrete(limits = rev) +
+  #ylim(0, 0.85) +
   xlab('Scramble Level') +
   ylab('Posterior Distribution of\nProportion Correct (Memory)') +
   scale_fill_discrete(name="", labels=c('Musicians', 'Non-musicians')) +
@@ -331,8 +332,8 @@ yrs_exp %>%
   xlab('Years of Musical Experience') +
   ylab('Overall Proportion Correct (Memory)') +
   scale_x_continuous(breaks = seq(5,30,5)) +
-  scale_y_continuous(breaks = seq(0.4, 1, 0.1)) +
-  ylim(0.4, 1) +
+  scale_y_continuous(breaks = seq(0, 1, 0.1)) +
+  ylim(0,1) +
   theme_gray(base_size = 16)
 ggsave('../figures/FigS1A_memory.png', width = 5, height = 5)
 ```

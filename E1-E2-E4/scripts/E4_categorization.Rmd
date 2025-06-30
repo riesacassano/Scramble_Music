@@ -2,7 +2,9 @@
 title: "E4 categorization"
 author: "R. Cassano-Coleman"
 date: "`r Sys.Date()`"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -31,6 +33,7 @@ data <- read_csv('../data/categorization.csv')
 Convert variables to factors.
 ```{r}
 data %<>%
+  mutate(scramble = ifelse(scramble == 'intact', 'Intact', scramble)) %>%
   mutate(exp_subject_id = as.factor(exp_subject_id),
          response = ifelse(response == 'Correct', TRUE, FALSE),
          scramble = factor(scramble, levels = c('Intact', '8B', '2B', '1B')),
@@ -79,8 +82,9 @@ prior_scramble1B <- set_prior('normal(-0.3, 1)', coef = 'scramble4')
 **Interaction:** We expect no interaction between group and scramble.
 
 ```{r}
-prior_int2B <- set_prior('normal(0, 1)', coef = 'Musician1:scramble2')
-prior_int1B <- set_prior('normal(0, 1)', coef = 'Musician1:scramble3') 
+prior_int8B <- set_prior('normal(0, 1)', coef = 'Musician1:scramble2')
+prior_int2B <- set_prior('normal(0, 1)', coef = 'Musician1:scramble3')
+prior_int1B <- set_prior('normal(0, 1)', coef = 'Musician1:scramble4') 
 ```
 
 **Random slope for subjects:**
@@ -94,9 +98,9 @@ prior_int1B <- set_prior('normal(0, 1)', coef = 'Musician1:scramble3')
 mus_scram <- brm(response ~ Musician + scramble + (1 | exp_subject_id), data = data,
                  family = bernoulli(),
                  prior = c(prior_intercept, prior_mus, 
-                           prior_scramble2B, prior_scramble1B),
+                           prior_scramble8B, prior_scramble2B, prior_scramble1B),
                  save_pars = save_pars(all = TRUE), iter = 5000,
-                 file = '../models/E1_mus_scram')
+                 file = '../models/E4_mus_scram')
 ```
 
 ```{r}
@@ -148,7 +152,7 @@ mus_only <- brm(response ~ Musician + (1 | exp_subject_id), data = data,
                  family = bernoulli(),
                  prior = c(prior_intercept, prior_mus),
                  save_pars = save_pars(all = TRUE), iter = 5000,
-                 file = '../models/E1_mus_only')
+                 file = '../models/E4_mus_only')
 ```
 
 ```{r}
@@ -176,10 +180,10 @@ Add an interaction between group and condition, and compare the model with the i
 mus_scram_int <- brm(response ~ Musician*scramble + (1 | exp_subject_id), data = data,
                  family = bernoulli(),
                  prior = c(prior_intercept, prior_mus, 
-                           prior_scramble2B, prior_scramble1B,
-                           prior_int2B, prior_int1B),
+                           prior_scramble8B, prior_scramble2B, prior_scramble1B,
+                           prior_int8B, prior_int2B, prior_int1B),
                  save_pars = save_pars(all = TRUE), iter = 5000,
-                 file = '../models/E1_mus_scram_int')
+                 file = '../models/E4_mus_scram_int')
 ```
 
 ```{r}
@@ -199,7 +203,7 @@ Strong evidence against an interaction between group and condition.
 
 \newpage
 
-## Figure 2A
+## Figure 5
 
 Create a helper function for the conversion from log odds to probability.
 
@@ -225,15 +229,16 @@ ggplot() +
                     ymax = calculate_prob_from_logodds(upper.HPD), 
                     fill = Musician), 
                 data = posterior_est, position = position_dodge(width = 0.9), width = 0.2) +
-  geom_hline(yintercept = 0.5, linetype = "dotted", color = "black", linewidth = 1) +
+  geom_hline(yintercept = 0.25, linetype = "dotted", color = "black", linewidth = 1) +
   theme_gray(base_size = 16) +
   scale_x_discrete(limits = rev) +
+  ylim(0, 0.85) +
   xlab('Scramble Level') +
-  ylab('Posterior Distribution of\nProportion Correct (Memory)') +
+  ylab('Posterior Distribution of\nProportion Correct') +
   scale_fill_discrete(name="", labels=c('Musicians', 'Non-musicians')) +
   theme(legend.text = element_text(size = 12))
 
-ggsave('../figures/Fig2A_memory.png', width = 7, height = 5)
+ggsave('../figures/Fig5_categorization.png', width = 7, height = 5)
 ```
 
 
@@ -258,9 +263,10 @@ For this analysis, we're operating on the scale of accuracy. Because we don't se
 
 ```{r}
 these_priors <- c(
-  set_prior('normal(0.75, 0.1)', class = 'Intercept'),
+  set_prior('normal(0.625, 0.1)', class = 'Intercept'),
   set_prior('normal(-0.1, 0.1)', coef = 'scramble2'),
   set_prior('normal(-0.2, 0.1)', coef = 'scramble3'),
+  set_prior('normal(-0.3, 0.1)', coef = 'scramble4'),
   set_prior('normal(0, 0.1)', coef = 'yrs_mus_exp')
 )
 ```
@@ -273,7 +279,7 @@ these_priors <- c(
 years_mus_scram <- brm(accuracy ~ scramble + yrs_mus_exp + (1|exp_subject_id), data = yrs_exp,
                    prior = these_priors,
                    save_pars = save_pars(all = TRUE), iter = 5000,
-                   file = '../models/E1_years')
+                   file = '../models/E4_years')
 ```
 
 ```{r}
@@ -286,10 +292,10 @@ print(summary(years_mus_scram), digits = 4)
 ```{r}
 years_mus <- brm(accuracy ~ yrs_mus_exp + (1|exp_subject_id), data = yrs_exp,
                  prior = c(
-                   set_prior('normal(0.75, 0.1)', class = 'Intercept'),
+                   set_prior('normal(0.625, 0.1)', class = 'Intercept'),
                    set_prior('normal(0, 0.1)', coef = 'yrs_mus_exp')),
                  save_pars = save_pars(all = TRUE), iter = 5000,
-                 file = '../models/E1_years_null')
+                 file = '../models/E4_years_null')
 ```
 
 ```{r}
@@ -315,9 +321,11 @@ yrs_null_BF <- describe_posterior(years_mus,
 print(yrs_null_BF, digits = 4)
 ```
 
+Strong evidence against an effect of years of musical experience.
+
 \newpage
 
-## Figure S1A
+## Figure S1C
 
 ```{r}
 yrs_exp %>%
@@ -328,10 +336,10 @@ yrs_exp %>%
   geom_abline(intercept = yrs_null_BF$Median[1], slope = yrs_null_BF$Median[2],
               color = '#F8766D', linewidth = 1, alpha = 0.8) +
   xlab('Years of Musical Experience') +
-  ylab('Overall Proportion Correct (Memory)') +
+  ylab('Overall Proportion Correct (Categorization)') +
   scale_x_continuous(breaks = seq(5,30,5)) +
-  scale_y_continuous(breaks = seq(0.4, 1, 0.1)) +
-  ylim(0.4, 1) +
+  scale_y_continuous(breaks = seq(0, 1, 0.1)) +
+  ylim(0,1) +
   theme_gray(base_size = 16)
-ggsave('../figures/FigS1A_memory.png', width = 5, height = 5)
+ggsave('../figures/FigS1C_categorization.png', width = 5, height = 5)
 ```
