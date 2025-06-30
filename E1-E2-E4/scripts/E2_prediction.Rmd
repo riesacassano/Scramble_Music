@@ -47,6 +47,10 @@ contrasts(data$scramble) <- contr.treatment(3)
 print(contrasts(data$scramble))
 ```
 
+```{r}
+contrasts(data$Musician)
+```
+
 \newpage
 
 # Main analysis
@@ -135,7 +139,7 @@ main_BF <- describe_posterior(mus_scram,
                               estimate = "median", dispersion = TRUE,
                               ci = .95, ci_method = "HDI",
                               test = c("bayes_factor"))
-print(main_BF, digits = 4)
+print(main_BF, digits = 5)
 ```
 
 Strong evidence against a main effect of group.
@@ -377,7 +381,7 @@ years_mus_scram <- brm(accuracy ~ scramble + yrs_mus_exp + (1|exp_subject_id), d
 
 ```{r}
 plot(years_mus_scram)
-print(summary(years_mus_scram), digits = 4)
+print(summary(years_mus_scram), digits = 5)
 ```
 
 ## Null model (for plotting purposes)
