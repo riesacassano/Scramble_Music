@@ -1,0 +1,204 @@
+---
+title: "E3 rate"
+author: "R. Cassano-Coleman"
+date: "`r Sys.Date()`"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse) # version 2.0.0
+library(magrittr) # version 2.0.3
+library(rstatix) # version 0.7.2
+
+library(brms) # version 2.22.0
+library(bayestestR) # version 0.15.0
+library(emmeans) # version 1.10.0
+```
+
+This notebook takes response rates by subject, log-transforms them, and runs a Bayesian version of a mixed effects model to replace the non-parametric ANOVA-type test that is currently reported in the paper.
+
+```{r}
+set.seed(15000)
+```
+
+Load the data.
+
+```{r}
+data <- read_csv("../data/response_rate_by_sub.csv")
+```
+
+Change musician and scramble into a factor.
+
+```{r}
+data %<>% mutate(Musician = factor(Musician, levels = c('Yes', 'No')),
+                 scramble = factor(scramble, levels = c('Intact', '8B', '2B', '1B')))
+```
+
+Set Intact as reference level.
+
+```{r}
+contrasts(data$scramble) <- contr.treatment(4)
+```
+
+\newpage
+
+Check normality of the true response rate data. (Ignoring stimulus set.)
+
+```{r}
+data %>% 
+  group_by(Musician, scramble) %>%
+  shapiro_test(mean_response_rate)
+```
+
+```{r}
+data %>%
+  ggplot(aes(x = scramble, y = mean_response_rate, fill = Musician)) +
+  geom_bar(position = "dodge", stat = "summary", fun = mean) +
+  geom_errorbar(position = position_dodge(width = 0.9), width = 0.2, stat = "summary") +
+  geom_point(position = position_jitterdodge(jitter.width = 0.1), alpha = 0.1) +
+  theme_gray(base_size = 16) +
+  xlab('Scramble Level') +
+  ylab('Response Rate (per Minute)') +
+  scale_fill_discrete(name="", labels=c('Musicians', 'Non-musicians')) +
+  theme(legend.text = element_text(size = 12))
+```
+
+\newpage
+
+Log-transform the rates and check for normality.
+
+```{r}
+data %<>% mutate(log_rate = log(1 + mean_response_rate))
+# add 1 so rates that are zero transform to 0 (rather than negative infinity)
+```
+
+```{r}
+data %>% 
+  group_by(Musician, scramble) %>%
+  shapiro_test(log_rate)
+```
+
+Some of these are worse than others. Visualize:
+
+```{r}
+data %>%
+  ggplot(aes(x = scramble, y = log_rate, fill = Musician)) +
+  geom_bar(position = "dodge", stat = "summary", fun = mean) +
+  geom_errorbar(position = position_dodge(width = 0.9), width = 0.2, stat = "summary") +
+  geom_point(position = position_jitterdodge(jitter.width = 0.1), alpha = 0.1) +
+  theme_gray(base_size = 16) +
+  xlab('Scramble Level') +
+  ylab('Log of Response Rate (per Minute)') +
+  scale_fill_discrete(name="", labels=c('Musicians', 'Non-musicians')) +
+  theme(legend.text = element_text(size = 12))
+#ggsave('rate.png', width = 7, height = 5)
+```
+
+It seems like this lack of normality is driven by the zero rates.
+
+
+
+\newpage
+
+```{r}
+get_prior(log_rate ~ Musician + scramble + (1|exp_subject_id), data = data)
+```
+
+```{r}
+these_priors <- c(
+  set_prior('normal(0, 0.5)', coef = "Musician1"), # don't necessarily expect a difference between groups
+  set_prior('normal(0, 0.5)', coef = "scramble2"), # intact vs 8B 
+  set_prior('normal(0, 0.5)', coef = "scramble3"), # intact vs 2B 
+  set_prior('normal(0, 0.5)', coef = "scramble4") # intact vs 1B 
+)
+```
+
+```{r}
+brm_log_rate <- brm(log_rate ~ Musician + scramble + (1|exp_subject_id), data = data,
+                    prior = these_priors,
+                    save_pars = save_pars(all = TRUE), iter = 5000,
+                    file = '../models/E3_log_rate')
+```
+
+\newpage
+
+```{r}
+plot(brm_log_rate)
+print(summary(brm_log_rate), digits = 4)
+```
+
+\newpage
+
+```{r}
+emm_log_rate <- emmeans(brm_log_rate, specs = c("scramble", "Musician"))
+summary(emm_log_rate)
+```
+
+```{r}
+emm_log_rate_s <- emmeans(brm_log_rate, specs = "scramble")
+summary(emm_log_rate_s)
+```
+
+```{r}
+contrast(emm_log_rate_s, method = "pairwise")
+```
+
+\newpage
+
+```{r}
+log_rate_BF <- describe_posterior(brm_log_rate,
+                                  estimate = "median", dispersion = TRUE,
+                                  ci = .95, ci_method = "HDI",
+                                  test = c("bayes_factor"))
+print(log_rate_BF, digits = 4)
+```
+
+\newpage
+
+Compare the full model to a model without scramble condition.
+
+```{r}
+brm_log_rate_null <- brm(log_rate ~ Musician + (1|exp_subject_id), data = data,
+                         prior = set_prior('normal(0, 0.5)', class = 'b'),
+                         save_pars = save_pars(all = TRUE), iter = 5000,
+                         file = '../models/E3_log_rate_null')
+```
+
+```{r}
+plot(brm_log_rate_null)
+print(summary(brm_log_rate_null), digits = 4)
+```
+
+```{r}
+BF_log_rate <- bayes_factor(brm_log_rate, brm_log_rate_null)
+print(BF_log_rate)
+```
+
+\newpage
+
+Visualize with posterior estimates and 95% CrI 
+
+```{r}
+posterior_est <- as.data.frame(emm_log_rate)
+```
+
+```{r}
+ggplot() +
+  geom_col(aes(x = scramble, y = exp(emmean), fill = Musician), data = posterior_est,
+           position = "dodge") +
+  geom_errorbar(aes(x = scramble, ymin = exp(lower.HPD), ymax = exp(upper.HPD), fill = Musician), 
+                data = posterior_est, position = position_dodge(width = 0.9), width = 0.2) +
+  geom_point(aes(x = scramble, y = mean_response_rate, fill = Musician), data = data, 
+             position = position_jitterdodge(dodge.width = 0.9, jitter.width = 0.1), alpha = 0.1) +
+  theme_gray(base_size = 16) +
+  scale_x_discrete(limits = rev) +
+  xlab('Scramble Level') +
+  ylab('Response Rate (per Minute)') +
+  scale_fill_discrete(name="", labels=c('Musicians', 'Non-musicians')) +
+  theme(legend.text = element_text(size = 12))
+
+ggsave('../figures/Fig3_rate.png', width = 7, height = 5)
+```

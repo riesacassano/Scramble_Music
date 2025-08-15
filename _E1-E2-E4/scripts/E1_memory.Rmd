@@ -1,0 +1,339 @@
+---
+title: "E1 memory"
+author: "R. Cassano-Coleman"
+date: "`r Sys.Date()`"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse) # version 2.0.0
+library(magrittr) # version 2.0.3
+
+library(brms) # version 2.22.0
+library(bayestestR) # version 0.15.0
+library(emmeans) # version 1.10.0
+```
+
+This notebook analyzes memory using Bayesian binomial generalized linear mixed effects models (GLMMs).
+
+
+# Set up
+
+```{r}
+set.seed(15000)
+```
+
+```{r}
+data <- read_csv('../data/memory.csv')
+```
+
+Convert variables to factors.
+```{r}
+data %<>%
+  mutate(exp_subject_id = as.factor(exp_subject_id),
+         response = ifelse(response == 'Correct', TRUE, FALSE),
+         scramble = factor(scramble, levels = c('8B', '2B', '1B')),
+         Musician = factor(Musician, levels = c('Yes', 'No'))) %>%
+  filter(!is.na(response))
+```
+
+Set the contrast for condition.
+
+```{r}
+contrasts(data$scramble) <- contr.treatment(3)
+print(contrasts(data$scramble))
+```
+
+\newpage
+
+# Main analysis
+
+## Priors
+
+Priors are expressed in log(odds) space.
+
+**Intercept:** Given that chance is 50%, we assume that participants will perform somewhere between chance and ceiling. We expect the center of the distribution of accuracy to be somewhere around 75% or 80%. If we use a center of 80% and an SD of 1, 95% of the values fall between 35.1% and 96.7%.
+
+```{r}
+prior_intercept <- set_prior('normal(log(0.8 / (1 - 0.8)), 1)', class = 'Intercept')
+```
+
+**Group:** We might expect musicians to do slightly better than non-musicians, on average.
+
+In this range, a difference in 0.25 log odds gives us about a 5% decrease in accuracy.
+```{r}
+prior_mus <- set_prior('normal(-0.25, 1)', coef = 'Musician1')
+```
+
+**Scramble:** We expect performance to improve as scramble level decreases. If we code 8B as reference level, then we expect 8B > 2B and 8B > 1B.
+
+Since we're keeping the musician slope at SD = 1, we'll keep these (and the interactions) at SD = 1. This seems to be a pretty weak prior.
+
+```{r}
+prior_scramble2B <- set_prior('normal(-0.1, 1)', coef = 'scramble2')
+prior_scramble1B <- set_prior('normal(-0.2, 1)', coef = 'scramble3')
+```
+
+**Interaction:** We expect no interaction between group and scramble.
+
+```{r}
+prior_int2B <- set_prior('normal(0, 1)', coef = 'Musician1:scramble2')
+prior_int1B <- set_prior('normal(0, 1)', coef = 'Musician1:scramble3') 
+```
+
+**Random slope for subjects:**
+*Leave this as default for now, may update.*
+
+\newpage
+
+## Main model with group and condition
+
+```{r}
+mus_scram <- brm(response ~ Musician + scramble + (1 | exp_subject_id), data = data,
+                 family = bernoulli(),
+                 prior = c(prior_intercept, prior_mus, 
+                           prior_scramble2B, prior_scramble1B),
+                 save_pars = save_pars(all = TRUE), iter = 5000,
+                 file = '../models/E1_mus_scram')
+```
+
+```{r}
+plot(mus_scram)
+```
+
+```{r}
+print(summary(mus_scram), digits = 4)
+```
+
+```{r}
+emm_mus_scram_s <- emmeans(mus_scram, specs = "scramble")
+summary(emm_mus_scram_s)
+```
+
+```{r}
+contrast(emm_mus_scram_s, method = "pairwise")
+```
+
+```{r}
+emm_mus_scram_ms <- emmeans(mus_scram, specs = c("Musician", "scramble"))
+summary(emm_mus_scram_ms)
+```
+
+```{r}
+contrast(emm_mus_scram_ms, method = "pairwise")
+```
+
+\newpage
+
+## Main effects
+
+```{r}
+main_BF <- describe_posterior(mus_scram,
+                              estimate = "median", dispersion = TRUE,
+                              ci = .95, ci_method = "HDI",
+                              test = c("bayes_factor"))
+print(main_BF, digits = 4)
+```
+
+Moderate evidence for a main effect of group.
+
+\newpage
+
+To get the main effect of scramble level, fit the "null" model with group only to compare.
+
+```{r}
+mus_only <- brm(response ~ Musician + (1 | exp_subject_id), data = data,
+                 family = bernoulli(),
+                 prior = c(prior_intercept, prior_mus),
+                 save_pars = save_pars(all = TRUE), iter = 5000,
+                 file = '../models/E1_mus_only')
+```
+
+```{r}
+plot(mus_only)
+```
+
+```{r}
+print(summary(mus_only), digits = 4)
+```
+
+```{r}
+BF_scramble <- bayes_factor(mus_scram, mus_only)
+print(BF_scramble)
+```
+
+Very strong evidence for a main effect of scramble condition.
+
+\newpage
+
+## Interaction between group and condition?
+
+Add an interaction between group and condition, and compare the model with the interaction to the one without.
+
+```{r}
+mus_scram_int <- brm(response ~ Musician*scramble + (1 | exp_subject_id), data = data,
+                 family = bernoulli(),
+                 prior = c(prior_intercept, prior_mus, 
+                           prior_scramble2B, prior_scramble1B,
+                           prior_int2B, prior_int1B),
+                 save_pars = save_pars(all = TRUE), iter = 5000,
+                 file = '../models/E1_mus_scram_int')
+```
+
+```{r}
+plot(mus_scram_int)
+```
+
+```{r}
+print(summary(mus_scram_int), digits = 4)
+```
+
+
+```{r}
+BF_int <- bayes_factor(mus_scram_int, mus_scram)
+print(BF_int)
+```
+Strong evidence against an interaction between group and condition.
+
+\newpage
+
+## Figure 2A
+
+Create a helper function for the conversion from log odds to probability.
+
+```{r}
+calculate_prob_from_logodds <- function(logodds) {
+  return(exp(logodds) / (1 + exp(logodds)))
+}
+```
+
+Visualize with posterior estimates and 95% CrI on the scale of accuracy.
+
+```{r}
+posterior_est <- as.data.frame(emm_mus_scram_ms)
+```
+
+```{r}
+ggplot() +
+  geom_col(aes(x = scramble, y = calculate_prob_from_logodds(emmean), fill = Musician), 
+           data = posterior_est,
+           position = "dodge") +
+  geom_errorbar(aes(x = scramble, 
+                    ymin = calculate_prob_from_logodds(lower.HPD), 
+                    ymax = calculate_prob_from_logodds(upper.HPD), 
+                    fill = Musician), 
+                data = posterior_est, position = position_dodge(width = 0.9), width = 0.2) +
+  geom_hline(yintercept = 0.5, linetype = "dotted", color = "black", linewidth = 1) +
+  theme_gray(base_size = 16) +
+  scale_x_discrete(limits = rev) +
+  #ylim(0, 0.85) +
+  xlab('Scramble Level') +
+  ylab('Posterior Distribution of\nProportion Correct (Memory)') +
+  scale_fill_discrete(name="", labels=c('Musicians', 'Non-musicians')) +
+  theme(legend.text = element_text(size = 12))
+
+ggsave('../figures/Fig2A_memory.png', width = 7, height = 5)
+```
+
+
+
+\newpage
+
+# Years of experience 
+
+Keep only the subjects for which we have years of experience data and average accuracy per condition.
+```{r}
+yrs_exp <- data %>% 
+  filter(!is.na(yrs_mus_exp)) %>%
+  group_by(exp_subject_id, scramble, yrs_mus_exp) %>%
+  summarize(count = n(),
+            n_correct = sum(response), 
+            accuracy = n_correct / count)
+```
+
+## Priors
+
+For this analysis, we're operating on the scale of accuracy. Because we don't see ceiling effects (i.e. participants aren't getting too close to perfect accuracy), a linear model is appropriate enough.
+
+```{r}
+these_priors <- c(
+  set_prior('normal(0.75, 0.1)', class = 'Intercept'),
+  set_prior('normal(-0.1, 0.1)', coef = 'scramble2'),
+  set_prior('normal(-0.2, 0.1)', coef = 'scramble3'),
+  set_prior('normal(0, 0.1)', coef = 'yrs_mus_exp')
+)
+```
+
+\newpage
+
+## Main model
+
+```{r}
+years_mus_scram <- brm(accuracy ~ scramble + yrs_mus_exp + (1|exp_subject_id), data = yrs_exp,
+                   prior = these_priors,
+                   save_pars = save_pars(all = TRUE), iter = 5000,
+                   file = '../models/E1_years')
+```
+
+```{r}
+plot(years_mus_scram)
+print(summary(years_mus_scram), digits = 4)
+```
+
+## Null model (for plotting purposes)
+
+```{r}
+years_mus <- brm(accuracy ~ yrs_mus_exp + (1|exp_subject_id), data = yrs_exp,
+                 prior = c(
+                   set_prior('normal(0.75, 0.1)', class = 'Intercept'),
+                   set_prior('normal(0, 0.1)', coef = 'yrs_mus_exp')),
+                 save_pars = save_pars(all = TRUE), iter = 5000,
+                 file = '../models/E1_years_null')
+```
+
+```{r}
+plot(years_mus)
+print(summary(years_mus), digits = 4)
+```
+
+\newpage
+
+```{r}
+yrs_BF <- describe_posterior(years_mus_scram,
+                             estimate = "median", dispersion = TRUE,
+                             ci = .95, ci_method = "HDI",
+                             test = c("bayes_factor"))
+print(yrs_BF, digits = 4)
+```
+
+```{r}
+yrs_null_BF <- describe_posterior(years_mus,
+                                  estimate = "median", dispersion = TRUE,
+                                  ci = .95, ci_method = "HDI",
+                                  test = c("bayes_factor"))
+print(yrs_null_BF, digits = 4)
+```
+
+\newpage
+
+## Figure S1A
+
+```{r}
+yrs_exp %>%
+  group_by(exp_subject_id, yrs_mus_exp) %>%
+  summarize(mean_acc = mean(accuracy)) %>%
+  ggplot(aes(yrs_mus_exp, mean_acc)) +
+  geom_point() +
+  geom_abline(intercept = yrs_null_BF$Median[1], slope = yrs_null_BF$Median[2],
+              color = '#F8766D', linewidth = 1, alpha = 0.8) +
+  xlab('Years of Musical Experience') +
+  ylab('Overall Proportion Correct (Memory)') +
+  scale_x_continuous(breaks = seq(5,30,5)) +
+  scale_y_continuous(breaks = seq(0, 1, 0.1)) +
+  ylim(0,1) +
+  theme_gray(base_size = 16)
+ggsave('../figures/FigS1A_memory.png', width = 5, height = 5)
+```
