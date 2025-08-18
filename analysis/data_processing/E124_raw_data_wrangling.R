@@ -8,11 +8,11 @@ select <- dplyr::select # make sure we're using the dplyr version of the select 
 
 # data files were combined and columns were selected using pandas
 # load the combined file
-data <- read_csv("raw_combined_E124.csv")
-# load the file with years of musical experience from the E1-E2-E4 folder
-data_yrs <- read_excel("../E1-E2-E4/years_musical_exp.xlsx")
+data <- read_csv("../data/E1-E2-E4/raw_combined.csv")
+# load the file with years of musical experience from the subject info folder
+data_yrs <- read_excel("../data/subject_info/E124_years_musical_exp.xlsx")
 # load the subject list
-subs <- read_excel('../E1-E2-E4/sub_ids.xlsx')
+subs <- read_excel('../data/subject_info/E124_sub_ids.xlsx')
 
 # extract the main task, remove practice task and instruction
 memory <- data %>%
