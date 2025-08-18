@@ -1,7 +1,5 @@
 Welcome! This readme provides an overview of the data and materials in this repo. These materials (plus all musical stimuli) are also on OSF here: https://osf.io/mej7a/
 
-
-
 # Data
 
 All participants, except those in dataset 3B, completed two tasks: either the memory or prediction task, then either the segmentation or categorization task. Participants in dataset 3B only completed the event segmentation task.
@@ -18,27 +16,48 @@ Prolific IDs have been removed to ensure anonymity.
 
 Descriptions of the variables are in `data/primary/primary_data_dictionary.xlsx`. Unfortunately, changes were made to the experiment during data collection, and those changes were not well-documented. Some variables are included in some participants raw data files and not others.
 
-
-# Code
-
-## System requirements
-
-## 
+## Processed data
 
 
-# Models
 
-`models` contains
+
+# Analysis
+
+## Requirements
+
+## Models
+
+The `analysis/models` contains
+
+## Analysis order
+
+Each analysis notebook (`.Rmd` files) are meant to stand on their own, so they can be run in any order. However, 
+
+## Experiment 1 (Memory)
+
+Figure 2A
+
+## Experiment 2 (Prediction)
+
+Figure 2B
+
+## Experiment 3 (Event segmentation)
+
+Figures 3 and 4
+
+
+## Experiment 4 (Categorization)
+
+Figures 5 and 6
+
+## Notebook PDFs
+
+All `.Rmd` and `.ipynb` files are knit or downloaded as a PDF version, so viewers can see the analysis steps and output without having to run the code in the notebooks. These PDF versions are in `analysis/notebooks/`
+
 
 
 
 
 # Output
 
-
-
-'primary_data/' contains the raw data as we got it from Labvanced. We have removed Prolific IDs to ensure anonymity. Raw data is wrangled in various scripts and saved in `E1-E2-E4/` and `E3/`
-
-'E1-E2-E4/' contains the data and analysis scripts needed to generate figures 2, 5, 6, and S1 and the results for experiments 1 (memory), 2 (prediction), and 4 (categorization). The analysis for these experiments was straightforward and similar enough that it made sense to group them into one folder.
-
-'E3/' contains data and analysis scripts needed to generate figures 3 and 4 and the results for experiment 3 (event segmentation).
+(figures)
