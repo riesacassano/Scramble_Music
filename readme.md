@@ -14,14 +14,14 @@ For dataset 3B, all raw data was obtained from Labvanced in one .csv file (`data
 
 Prolific IDs have been removed to ensure anonymity.
 
-Descriptions of the variables are in `data/primary/primary_data_dictionary.xlsx`. Unfortunately, changes were made to the experiment during data collection, and those changes were not well-documented. This means that some variables are included in some participants raw data files and not others.
+Descriptions of the variables are in `data/data_dictionaries/primary_data_dictionary.xlsx`. Unfortunately, changes were made to the experiment during data collection, and those changes were not well-documented. This means that some variables are included in some participants raw data files and not others.
 
 **Note:** data for the confusion matrices was manually coded and saved in `data/primary/dataConfuseMatrix.xlsx`. While this is not technically primary data, it is the only data file used in analysis that is manually coded and not produced by one of the processing scripts described below.
 
 
 ## Processed data
 
-All data in these folders (`data/E1-E2-E4/` and `data/E3/`) are produced by the data processing steps described here. The scripts described in the following steps are found in `analysis/data_processing/` and need to be run prior to running the analysis notebooks (described below). Columns are described in respective data dictionaries.
+All data in these folders (`data/E1-E2-E4/` and `data/E3/`) are produced by the data processing steps described here. The scripts described in the following steps are found in `analysis/data_processing/` and need to be run prior to running the analysis notebooks (described below). Columns are described in respective data dictionaries in `data/data_dictionaries/`.
 
 Steps for experiments 1, 2, and 4:
 1. `E124_raw_data_combining.py` combines the raw data for these three experiments from `data/primary/` and saves it in `data/E1-E2-E4/`
