@@ -21,11 +21,11 @@ Descriptions of the variables are in `data/primary/primary_data_dictionary.xlsx`
 
 ## Processed data
 
-All data in these folders (`data/E1-E2-E4/` and `data/E3/`) are produced by the data processing steps described here. The scripts described in the following steps are found in `analysis/data_processing/` and need to be run prior to running the analysis notebooks (described below).
+All data in these folders (`data/E1-E2-E4/` and `data/E3/`) are produced by the data processing steps described here. The scripts described in the following steps are found in `analysis/data_processing/` and need to be run prior to running the analysis notebooks (described below). Columns are described in respective data dictionaries.
 
 Steps for experiments 1, 2, and 4:
 1. `E124_raw_data_combining.py` combines the raw data for these three experiments from `data/primary/` and saves it in `data/E1-E2-E4/`
-2. `E124_raw_data_wrangling.R` takes the combined version of the data and...
+2. `E124_raw_data_wrangling.R` takes the combined version of the data, cleans it up, and saves it in separate files for each task (in the `data/E1-E2-E4/` folder: `memory.csv`, `prediction.csv`, `categorization.csv`).
 
 Steps for experiment 3:
 

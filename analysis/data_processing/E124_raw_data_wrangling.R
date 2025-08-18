@@ -86,8 +86,8 @@ print(length(unique(filter(prediction, Musician == 'Yes')$exp_subject_id))) # 53
 print(length(unique(filter(categorization, Musician == 'Yes')$exp_subject_id))) # 54 / 106 are musicians
 
 # save the wrangled data
-write_csv(memory, '../E1-E2-E4/data/memory.csv')
-write_csv(prediction, '../E1-E2-E4/data/prediction.csv')
-write_csv(categorization, '../E1-E2-E4/data/categorization.csv')
+write_csv(memory, '../data/E1-E2-E4/memory.csv')
+write_csv(prediction, '../data/E1-E2-E4/prediction.csv')
+write_csv(categorization, '../data/E1-E2-E4/categorization.csv')
 
 
