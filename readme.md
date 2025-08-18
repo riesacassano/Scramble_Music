@@ -16,9 +16,7 @@ For dataset 3B, all raw data was obtained from Labvanced in one .csv file (`data
 
 Prolific IDs have been removed to ensure anonymity.
 
-
-
-
+Descriptions of the variables are in `data/primary/primary_data_dictionary.xlsx`. Unfortunately, changes were made to the experiment during data collection, and those changes were not well-documented. Some variables are included in some participants raw data files and not others.
 
 
 # Code
