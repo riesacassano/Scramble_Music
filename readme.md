@@ -31,10 +31,20 @@ Steps for experiment 3:
 1. `E3_raw_data_combining.py` combines the raw data for experiment 3, dataset A from `data/primary/` and saves it in `data/E3/`
 2. `E3_raw_data_wrangling.Rmd` takes the combined version of dataset 3A, adds the additional subjects from `subs_additional_E3A.xlsx`, and computes response rate and extracts timestamps. It then computes rate and extracts timestamps from dataset 3B, standardizes column names, and combines across datasets. Processed data is saved in `data/E3/`.
 
+## Other folders
 
-## Subject info
+### Data dictionaries
 
-This folder contains lists of subjects with complete datasets for each experiment and whether they were a musician or not (`data/subject_info/E*_sub_ids.xlsx`) as well as their years of musical experience, if applicable (`data/subject_info/E*_years_musical_exp.xlsx`, extracted from post-survey responses). 
+`data/data_dictionaries` contains the descriptions of data as promised elsewhere.
+
+### Subject info
+
+`data/subject_info` contains lists of subjects with complete datasets for each experiment and whether they were a musician or not (`data/subject_info/E*_sub_ids.xlsx`) as well as their years of musical experience, if applicable (`data/subject_info/E*_years_musical_exp.xlsx`, extracted from post-survey responses). 
+
+
+### Stimulus info
+
+`data/stimulus_info_E3` contains additional information about the stimuli that is necessary for running the E3 analyses. This included ground truth about event boundaries as well as pitch and rhythm information extracted from the MIDI files.
 
 
 # Analysis
