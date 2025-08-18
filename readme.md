@@ -1,4 +1,4 @@
-Welcome! This readme provides an overview of the data and materials in this repo. These materials (plus all musical stimuli) are also on OSF here: https://osf.io/mej7a/
+Welcome! The materials in this repo (plus all musical stimuli) are also on OSF here: https://osf.io/mej7a/
 
 # Data
 
@@ -14,7 +14,7 @@ For dataset 3B, all raw data was obtained from Labvanced in one .csv file (`data
 
 Prolific IDs have been removed to ensure anonymity.
 
-Descriptions of the variables are in `data/primary/primary_data_dictionary.xlsx`. Unfortunately, changes were made to the experiment during data collection, and those changes were not well-documented. Some variables are included in some participants raw data files and not others.
+Descriptions of the variables are in `data/primary/primary_data_dictionary.xlsx`. Unfortunately, changes were made to the experiment during data collection, and those changes were not well-documented. This means that some variables are included in some participants raw data files and not others.
 
 **Note:** data for the confusion matrices was manually coded and saved in `data/primary/dataConfuseMatrix.xlsx`. While this is not technically primary data, it is the only data file used in analysis that is manually coded and not produced by one of the processing scripts described below.
 
@@ -34,7 +34,9 @@ The `analysis/models` contains
 
 ## Analysis order
 
-Each analysis notebook (`.Rmd` files) are meant to stand on their own, so they can be run in any order. However, 
+Data processing scripts (described above) need to be run prior to any of the analysis notebooks described below.
+
+Each analysis notebook (`.Rmd` files) are meant to stand on their own, so they can be run in any order. However, (E3 exception)
 
 ## Experiment 1 (Memory)
 
