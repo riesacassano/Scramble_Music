@@ -84,35 +84,18 @@ Data processing scripts (described above, stored in `analysis/data_processing/`)
 
 Each analysis notebook (`.Rmd` files) are meant to stand on their own, so they can be run in any order. However, (E3 exception)
 
-## Experiment 1 (Memory)
-
-`analysis/E1_memory.Rmd`
-
-Figure 2A
-
-## Experiment 2 (Prediction)
-
-Figure 2B
-
-## Experiment 3 (Event segmentation)
-
-Figures 3 and 4
-
-
-`pitch_and_rhythm.Rmd` use linear models with absolute pitch change, absolute rhythm change, and their interaction to predict number of participants responding separately for each condition and group (musicians vs non-musicians). 
-
-## Experiment 4 (Categorization)
-
-Figures 5 and 6
 
 ## Notebook PDFs
 
-All `.Rmd` and `.ipynb` files are knit or downloaded as a PDF version, so viewers can see the analysis steps and output without having to run the code in the notebooks. These PDF versions are in `analysis/notebooks/`
+All `.Rmd` and `.ipynb` files are knit or downloaded as a PDF version, so viewers can see the analysis steps and output without having to run the code in the notebooks. These PDF versions are in `analysis/notebooks/`.
 
 
 
 
+# Figures
 
-# Output
+## Experiments 1 (Memory), 2 (Prediction), and 4 (Categorization)
 
-(figures)
+`analysis/E1_memory.Rmd` generates figures 2A and S1A. `analysis/E2_memory.Rmd` generates figures 2B and S1B. `analysis/E4_categorization.Rmd` generates figures 5 and S1C. `analysis/E4_confusion_matrix.R` generates figure 6. Multi-panel figures (Fig. 2 and Fig. S1) are combined manually in `figures/combined figures.pptx` and saved in `figures/`.
+
+## Experiment 3 (Event segmentation)
