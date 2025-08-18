@@ -5,6 +5,7 @@ date: "`r Sys.Date()`"
 output:
   pdf_document: default
   html_document: default
+knit: (function(inputFile, encoding) {rmarkdown::render(inputFile, encoding = encoding, output_dir = "notebooks") })
 ---
 
 ```{r setup, include=FALSE}
@@ -27,7 +28,7 @@ set.seed(15000)
 ```
 
 ```{r}
-data <- read_csv('../data/memory.csv')
+data <- read_csv('../data/E1-E2-E4/memory.csv')
 ```
 
 Convert variables to factors.
@@ -97,7 +98,7 @@ mus_scram <- brm(response ~ Musician + scramble + (1 | exp_subject_id), data = d
                  prior = c(prior_intercept, prior_mus, 
                            prior_scramble2B, prior_scramble1B),
                  save_pars = save_pars(all = TRUE), iter = 5000,
-                 file = '../models/E1_mus_scram')
+                 file = 'models/E1_mus_scram')
 ```
 
 ```{r}
@@ -149,7 +150,7 @@ mus_only <- brm(response ~ Musician + (1 | exp_subject_id), data = data,
                  family = bernoulli(),
                  prior = c(prior_intercept, prior_mus),
                  save_pars = save_pars(all = TRUE), iter = 5000,
-                 file = '../models/E1_mus_only')
+                 file = 'models/E1_mus_only')
 ```
 
 ```{r}
@@ -180,7 +181,7 @@ mus_scram_int <- brm(response ~ Musician*scramble + (1 | exp_subject_id), data =
                            prior_scramble2B, prior_scramble1B,
                            prior_int2B, prior_int1B),
                  save_pars = save_pars(all = TRUE), iter = 5000,
-                 file = '../models/E1_mus_scram_int')
+                 file = 'models/E1_mus_scram_int')
 ```
 
 ```{r}
@@ -275,7 +276,7 @@ these_priors <- c(
 years_mus_scram <- brm(accuracy ~ scramble + yrs_mus_exp + (1|exp_subject_id), data = yrs_exp,
                    prior = these_priors,
                    save_pars = save_pars(all = TRUE), iter = 5000,
-                   file = '../models/E1_years')
+                   file = 'models/E1_years')
 ```
 
 ```{r}
@@ -291,7 +292,7 @@ years_mus <- brm(accuracy ~ yrs_mus_exp + (1|exp_subject_id), data = yrs_exp,
                    set_prior('normal(0.75, 0.1)', class = 'Intercept'),
                    set_prior('normal(0, 0.1)', coef = 'yrs_mus_exp')),
                  save_pars = save_pars(all = TRUE), iter = 5000,
-                 file = '../models/E1_years_null')
+                 file = 'models/E1_years_null')
 ```
 
 ```{r}

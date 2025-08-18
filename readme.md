@@ -70,6 +70,9 @@ The `by_stimulus` folder includes one subfolder for each condition. Each subfold
 - tidyverse 2.0.0
 - magrittr 2.0.3
 - readxl 1.4.3
+- brms 2.22.0
+- bayestestR 0.15.0
+- emmeans 1.10.0
 
 ## Models
 
@@ -77,11 +80,13 @@ The `analysis/models/` contains all of the fit Bayesian models used in the analy
 
 ## Analysis order
 
-Data processing scripts (described above) need to be run prior to any of the analysis notebooks described below.
+Data processing scripts (described above, stored in `analysis/data_processing/`) need to be run prior to any of the analysis notebooks described below.
 
 Each analysis notebook (`.Rmd` files) are meant to stand on their own, so they can be run in any order. However, (E3 exception)
 
 ## Experiment 1 (Memory)
+
+`analysis/E1_memory.Rmd`
 
 Figure 2A
 
