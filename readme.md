@@ -36,10 +36,15 @@ Steps for experiment 3:
 ## Requirements
 
 Python and associated packages
-- python 3.11.8
+- Python 3.11.8
 - numpy 1.26.4
 - pandas 2.2.3
 R and associated packages
+- R 4.3.3
+- RStudio 2024.12.0+467
+- tidyverse 2.0.0
+- magrittr 2.0.3
+- readxl 1.4.3
 
 ## Models
 
