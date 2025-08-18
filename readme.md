@@ -16,6 +16,9 @@ Prolific IDs have been removed to ensure anonymity.
 
 Descriptions of the variables are in `data/primary/primary_data_dictionary.xlsx`. Unfortunately, changes were made to the experiment during data collection, and those changes were not well-documented. Some variables are included in some participants raw data files and not others.
 
+**Note:** data for the confusion matrices was manually coded and saved in `data/primary/dataConfuseMatrix.xlsx`. While this is not technically primary data, it is the only data file used in analysis that is manually coded and not produced by one of the processing scripts described below.
+
+
 ## Processed data
 
 
