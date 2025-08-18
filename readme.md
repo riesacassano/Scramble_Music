@@ -21,7 +21,7 @@ Descriptions of the variables are in `data/primary/primary_data_dictionary.xlsx`
 
 ## Processed data
 
-The scripts described in the following steps are found in `analysis/data_processing/` and need to be run prior to running the analysis notebooks (described below).
+All data in these folders (`data/E1-E2-E4/` and `data/E3/`) are produced by the data processing steps described here. The scripts described in the following steps are found in `analysis/data_processing/` and need to be run prior to running the analysis notebooks (described below).
 
 Steps for experiments 1, 2, and 4:
 1. `E124_raw_data_combining.py` combines the raw data for these three experiments from `data/primary/` and saves it in `data/E1-E2-E4/`
@@ -29,6 +29,10 @@ Steps for experiments 1, 2, and 4:
 
 Steps for experiment 3:
 
+
+## Subject info
+
+This folder contains lists of subjects with complete datasets for each experiment as well as their years of musical experience (extracted from post-survey responses). 
 
 
 # Analysis
