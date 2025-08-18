@@ -21,12 +21,25 @@ Descriptions of the variables are in `data/primary/primary_data_dictionary.xlsx`
 
 ## Processed data
 
+The scripts described in the following steps are found in `analysis/data_processing/` and need to be run prior to running the analysis notebooks (described below).
+
+Steps for experiments 1, 2, and 4:
+1. `E124_raw_data_combining.py` combines the raw data for these three experiments from `data/primary/` and saves it in `data/E1-E2-E4/`
+2. `E124_raw_data_wrangling.R` takes the combined version of the data and...
+
+Steps for experiment 3:
 
 
 
 # Analysis
 
 ## Requirements
+
+Python and associated packages
+- python 3.11.8
+- numpy 1.26.4
+- pandas 2.2.3
+R and associated packages
 
 ## Models
 
