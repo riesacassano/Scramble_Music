@@ -32,7 +32,7 @@ Steps for experiment 3:
 
 ## Subject info
 
-This folder contains lists of subjects with complete datasets for each experiment as well as their years of musical experience (extracted from post-survey responses). 
+This folder contains lists of subjects with complete datasets for each experiment (`data/subject_info/E*_sub_ids.xlsx`) as well as their years of musical experience, if applicable (`data/subject_info/E*_years_musical_exp.xlsx`, extracted from post-survey responses). 
 
 
 # Analysis
