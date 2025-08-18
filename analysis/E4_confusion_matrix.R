@@ -47,7 +47,7 @@ ggplot(heatmap_df, aes(x = Prediction, y = Reference, fill = value)) +
   labs(title = "Confusion Matrix - Non-musicians", x = "Participant Response", y = "True Category") +
   scale_x_continuous(breaks = seq_along(x_labels), labels = x_labels) +
   scale_y_continuous(breaks = seq_along(y_labels), labels = y_labels) 
-#ggsave('../figures/Fig6A_confusion_matrix_musicians.png', width = 5, height = 4.5)
+ggsave('../figures/Fig6A_confusion_matrix_nonmusicians.png', width = 5, height = 4.5)
 
 #musicians
 heatmap_df_mus <- melt(matrix_mus)
@@ -58,4 +58,4 @@ ggplot(heatmap_df_mus, aes(x = Prediction, y = Reference, fill = value)) +
   labs(title = "Confusion Matrix - Musicians", x = "Participant Response", y = "True Category") +
   scale_x_continuous(breaks = seq_along(x_labels), labels = x_labels) +
   scale_y_continuous(breaks = seq_along(y_labels), labels = y_labels)
-#ggsave('../figures/Fig6B_confusion_matrix_musicians.png', width = 5, height = 4.5)
+ggsave('../figures/Fig6B_confusion_matrix_musicians.png', width = 5, height = 4.5)

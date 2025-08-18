@@ -73,6 +73,8 @@ The `by_stimulus` folder includes one subfolder for each condition. Each subfold
 - brms 2.22.0
 - bayestestR 0.15.0
 - emmeans 1.10.0
+- caret 6.0-94
+- reshape2 1.4.4
 
 ## Models
 
@@ -96,6 +98,6 @@ All `.Rmd` and `.ipynb` files are knit or downloaded as a PDF version, so viewer
 
 ## Experiments 1 (Memory), 2 (Prediction), and 4 (Categorization)
 
-`analysis/E1_memory.Rmd` generates figures 2A and S1A. `analysis/E2_memory.Rmd` generates figures 2B and S1B. `analysis/E4_categorization.Rmd` generates figures 5 and S1C. `analysis/E4_confusion_matrix.R` generates figure 6. Multi-panel figures (Fig. 2 and Fig. S1) are combined manually in `figures/combined figures.pptx` and saved in `figures/`.
+`analysis/E1_memory.Rmd` generates figures 2A and S1A. `analysis/E2_memory.Rmd` generates figures 2B and S1B. `analysis/E4_categorization.Rmd` generates figures 5 and S1C. `analysis/E4_confusion_matrix.R` generates figure 6. Multi-panel figures are combined manually in `figures/combined figures.pptx` and saved in `figures/`.
 
 ## Experiment 3 (Event segmentation)
