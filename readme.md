@@ -28,11 +28,12 @@ Steps for experiments 1, 2, and 4:
 2. `E124_raw_data_wrangling.R` takes the combined version of the data, cleans it up, and saves it in separate files for each task (in the `data/E1-E2-E4/` folder: `memory.csv`, `prediction.csv`, `categorization.csv`).
 
 Steps for experiment 3:
+1. `E3_raw_data_combining.py` combines the raw data for experiment 3, dataset A from `data/primary/` and saves it in `data/E3/`
 
 
 ## Subject info
 
-This folder contains lists of subjects with complete datasets for each experiment (`data/subject_info/E*_sub_ids.xlsx`) as well as their years of musical experience, if applicable (`data/subject_info/E*_years_musical_exp.xlsx`, extracted from post-survey responses). 
+This folder contains lists of subjects with complete datasets for each experiment and whether they were a musician or not (`data/subject_info/E*_sub_ids.xlsx`) as well as their years of musical experience, if applicable (`data/subject_info/E*_years_musical_exp.xlsx`, extracted from post-survey responses). 
 
 
 # Analysis
