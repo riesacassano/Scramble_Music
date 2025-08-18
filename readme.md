@@ -31,6 +31,7 @@ Steps for experiment 3:
 1. `E3_raw_data_combining.py` combines the raw data for experiment 3, dataset A from `data/primary/` and saves it in `data/E3/`
 2. `E3_raw_data_wrangling.Rmd` takes the combined version of dataset 3A, adds the additional subjects from `subs_additional_E3A.xlsx`, and computes response rate and extracts timestamps. It then computes rate and extracts timestamps from dataset 3B, standardizes column names, and combines across datasets. Processed data is saved in `data/E3/`.
 
+
 ## Other folders
 
 ### Data dictionaries
@@ -53,6 +54,7 @@ We also noted boundaries, but they aren't used in the analysis reported here. Fo
 The `by_stimulus` folder includes one subfolder for each condition. Each subfolder contains each stimulus as a separate csv. All of this information is in the `pitch_rhythm_resp_(cond).csv` files.
 
 
+
 # Analysis
 
 ## Requirements
@@ -71,7 +73,7 @@ The `by_stimulus` folder includes one subfolder for each condition. Each subfold
 
 ## Models
 
-The `analysis/models` contains
+The `analysis/models/` contains all of the fit Bayesian models used in the analysis. brms will automatically load these models if it can find them.
 
 ## Analysis order
 
