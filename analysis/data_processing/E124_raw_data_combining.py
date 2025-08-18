@@ -1,11 +1,11 @@
-# This script combines the raw data files for E1, E2, and E4.
+# This script combines the raw data files for E1, E2, and E4 (from 'data/primary/') and saves them in a large csv file in 'data/E1-E2-E4/'. It should be run from the 'analysis/' folder.
 
 import os
 import numpy as np
 import pandas as pd
 
 # load the file list
-folder = 'raw_data_anonymized/'
+folder = '../data/primary/individual_participants/'
 file_list = os.listdir(folder)
 
 df_list = []
@@ -49,4 +49,4 @@ for entry in file_list:
 
 # concatenate
 big_df = pd.concat(df_list, ignore_index = True)
-big_df.to_csv('raw_combined_E124.csv', index = False)
+big_df.to_csv('../data/E1-E2-E4/raw_combined.csv', index = False)
