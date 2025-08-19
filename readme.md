@@ -67,6 +67,9 @@ The `by_stimulus` folder includes one subfolder for each condition. Each subfold
 - Python 3.11.8
 - numpy 1.26.4
 - pandas 2.2.3
+- scipy 1.14.1
+- matplotlib 3.10.0
+- Jupyter notebook 7.0.8
 
 **R and associated packages**
 - R 4.3.3
