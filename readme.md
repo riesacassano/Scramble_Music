@@ -2,7 +2,7 @@ Welcome! The materials in this repo (plus all musical stimuli) are also on OSF h
 
 # Data
 
-All participants, except those in dataset 3B, completed two tasks: either the memory or prediction task, then either the segmentation or categorization task. Participants in dataset 3B only completed the event segmentation task.
+All participants, except those in dataset 3B, completed two tasks: either the memory or prediction task, then either the segmentation or categorization task. Participants in dataset 3B completed a longer version of the event segmentation task.
 
 When participants were recruited, they were assigned to a group, and we balanced the number of musicians and non-musicians in each group. Groups 1-3 completed the memory and event segmentation tasks, groups 4-6 completed the memory and categorization tasks, groups 7-9 completed the prediction and event segmentation tasks, and groups 10-12 completed the prediction and categorization tasks. Within a task (e.g. memory), all stimuli were taken from the same stimulus set, but the stimulus set used for the second task (e.g. categorization) was different from the set used for the first task. Each group heard a different combination of stimulus sets.
 
@@ -90,9 +90,9 @@ The `analysis/models/` contains all of the fit Bayesian models used in the analy
 
 ## Analysis order
 
-Data processing scripts (described above, stored in `analysis/data_processing/`) need to be run prior to any of the analysis notebooks described below.
+Data processing scripts (described above) need to be run prior to any of the analysis notebooks described below.
 
-Each analysis notebook (`.Rmd` files) are meant to stand on their own, so they can be run in any order. However, for E3, `E3_alignment.Rmd` uses the output of `E3_compute_precision_sensitivity.ipynb`. The output of `E3_compute_precision_sensitivity.ipynb` is called `alignment.csv`. Because samples are randomly generated for the null distribution, there may be some variability in exact alignment values. `alignment_original.csv` contains the alignment values that we originally computed and reported in the paper.
+Each analysis notebook (`.Rmd` files) is meant to stand on its own, so they can be run in any order. However, `E3_alignment.Rmd` uses the output of `E3_compute_precision_sensitivity.ipynb`. Also, the output of `E3_compute_precision_sensitivity.ipynb` is called `alignment.csv`. Because samples are randomly generated for the null distribution, there may be some variability in exact alignment values. `alignment_original.csv` contains the alignment values that we originally computed and reported in the paper.
 
 The order of analysis in the paper is:
 - `E1_memory.Rmd`
@@ -114,13 +114,13 @@ All `.Rmd` and `.ipynb` files are knit or downloaded as a PDF version, so viewer
 
 # Figures
 
-## Experiments 1 (Memory), 2 (Prediction), and 4 (Categorization)
-
-`analysis/E1_memory.Rmd` generates figures 2A and S1A. `analysis/E2_memory.Rmd` generates figures 2B and S1B. `analysis/E4_categorization.Rmd` generates figures 5 and S1C. `analysis/E4_confusion_matrix.R` generates figure 6. Multi-panel figures are combined manually in `figures/combined figures.pptx` and saved in `figures/`.
-
-## Experiment 3 (Event segmentation)
+`analysis/E1_memory.Rmd` generates figures 2A and S1A. `analysis/E2_memory.Rmd` generates figures 2B and S1B. 
 
 `analysis/E3_rate.Rmd` generates figure 3. `analysis/E3_compute_precision_sensitivity.ipynb` generates figure 4. To skip the alignment computation and just generate figure 4, `analysis/E3_figure4.py` is a simple python script that does that using `data/E3/alignment_original.csv`.
+
+`analysis/E4_categorization.Rmd` generates figures 5 and S1C. `analysis/E4_confusion_matrix.R` generates figure 6. Multi-panel figures are combined manually in `figures/combined figures.pptx` and saved in `figures/`.
+
+
 
 
 
