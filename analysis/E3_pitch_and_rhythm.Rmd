@@ -5,7 +5,9 @@ date: "`r Sys.Date()`"
 output:
   pdf_document: default
   html_document: default
+knit: (function(inputFile, encoding) {rmarkdown::render(inputFile, encoding = encoding, output_dir = "notebooks") })
 ---
+
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, message = FALSE)
@@ -18,10 +20,10 @@ library(magrittr)
 
 Load the data.
 ```{r}
-data_Intact <- read_csv('pitch_rhythm_resp_Intact.csv', show_col_types = FALSE)
-data_8B <- read_csv('pitch_rhythm_resp_8B.csv', show_col_types = FALSE)
-data_2B <- read_csv('pitch_rhythm_resp_2B.csv', show_col_types = FALSE)
-data_1B <- read_csv('pitch_rhythm_resp_1B.csv', show_col_types = FALSE)
+data_Intact <- read_csv('../data/stimulus_info_E3/pitch_rhythm_resp_Intact.csv', show_col_types = FALSE)
+data_8B <- read_csv('../data/stimulus_info_E3/pitch_rhythm_resp_8B.csv', show_col_types = FALSE)
+data_2B <- read_csv('../data/stimulus_info_E3/pitch_rhythm_resp_2B.csv', show_col_types = FALSE)
+data_1B <- read_csv('../data/stimulus_info_E3/pitch_rhythm_resp_1B.csv', show_col_types = FALSE)
 ```
 
 \newpage
