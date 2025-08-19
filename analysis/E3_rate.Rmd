@@ -19,7 +19,7 @@ library(bayestestR) # version 0.15.0
 library(emmeans) # version 1.10.0
 ```
 
-This notebook takes response rates by subject, log-transforms them, and runs a Bayesian version of a mixed effects model to replace the non-parametric ANOVA-type test that is currently reported in the paper.
+This notebook takes response rates by subject, log-transforms them, and runs a Bayesian version of a mixed effects model.
 
 ```{r}
 set.seed(15000)
@@ -28,7 +28,7 @@ set.seed(15000)
 Load the data.
 
 ```{r}
-data <- read_csv("../data/response_rate_by_sub.csv")
+data <- read_csv("../data/E3/response_rate_by_sub.csv")
 ```
 
 Change musician and scramble into a factor.
@@ -95,7 +95,7 @@ data %>%
   ylab('Log of Response Rate (per Minute)') +
   scale_fill_discrete(name="", labels=c('Musicians', 'Non-musicians')) +
   theme(legend.text = element_text(size = 12))
-#ggsave('rate.png', width = 7, height = 5)
+#ggsave('log_rate.png', width = 7, height = 5)
 ```
 
 It seems like this lack of normality is driven by the zero rates.
@@ -121,7 +121,7 @@ these_priors <- c(
 brm_log_rate <- brm(log_rate ~ Musician + scramble + (1|exp_subject_id), data = data,
                     prior = these_priors,
                     save_pars = save_pars(all = TRUE), iter = 5000,
-                    file = '../models/E3_log_rate')
+                    file = 'models/E3_log_rate')
 ```
 
 \newpage
@@ -165,7 +165,7 @@ Compare the full model to a model without scramble condition.
 brm_log_rate_null <- brm(log_rate ~ Musician + (1|exp_subject_id), data = data,
                          prior = set_prior('normal(0, 0.5)', class = 'b'),
                          save_pars = save_pars(all = TRUE), iter = 5000,
-                         file = '../models/E3_log_rate_null')
+                         file = 'models/E3_log_rate_null')
 ```
 
 ```{r}

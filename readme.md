@@ -77,6 +77,7 @@ The `by_stimulus` folder includes one subfolder for each condition. Each subfold
 - brms 2.22.0
 - bayestestR 0.15.0
 - emmeans 1.10.0
+- rstatix 0.7.2
 - caret 6.0-94
 - reshape2 1.4.4
 
