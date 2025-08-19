@@ -21,7 +21,9 @@ Descriptions of the variables are in `data/data_dictionaries/primary_data_dictio
 
 ## Processed data
 
-All data in these folders (`data/E1-E2-E4/` and `data/E3/`) are produced by the data processing steps described here. The scripts described in the following steps are found in `analysis/data_processing/` and need to be run prior to running the analysis notebooks (described below). Columns are described in respective data dictionaries in `data/data_dictionaries/`.
+All data in these folders (`data/E1-E2-E4/` and `data/E3/`) are produced by the data processing steps described here *except* `data/E3/alignment_original.csv` (see note below).
+
+The scripts described in the following steps are found in `analysis/data_processing/` and need to be run prior to running the analysis notebooks (described below). Columns are described in respective data dictionaries in `data/data_dictionaries/`.
 
 Steps for experiments 1, 2, and 4:
 1. `E124_raw_data_combining.py` combines the raw data for these three experiments from `data/primary/` and saves it in `data/E1-E2-E4/`
@@ -30,6 +32,8 @@ Steps for experiments 1, 2, and 4:
 Steps for experiment 3:
 1. `E3_raw_data_combining.py` combines the raw data for experiment 3, dataset A from `data/primary/` and saves it in `data/E3/`
 2. `E3_raw_data_wrangling.Rmd` takes the combined version of dataset 3A, adds the additional subjects from `subs_additional_E3A.xlsx`, and computes response rate and extracts timestamps. It then computes rate and extracts timestamps from dataset 3B, standardizes column names, and combines across datasets. Processed data is saved in `data/E3/`.
+
+(For E3, participants who heard set 2 are excluded from this analysis, since set 1 and set 2 are highly overlapping and we didn't want to overrepresent certain stimuli in our results.)
 
 
 ## Other folders
