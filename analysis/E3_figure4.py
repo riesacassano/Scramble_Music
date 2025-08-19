@@ -7,7 +7,8 @@ plt.rcParams["font.family"] = "Arial"
 plt.rcParams["font.size"] = 12
 
 # load the data
-data = pd.read_csv('../data/alignment_original.csv')
+data = pd.read_csv('../data/E3/alignment_original.csv')
+#data = pd.read_csv('../data/E3/alignment.csv')
 
 # make the subject label categorical
 data['sub'] = data['sub'].astype('category')
@@ -54,5 +55,5 @@ for col in range(2):
     ax[col].set_xlabel('Level (Bars)', fontsize = 18)
     ax[col].legend(fontsize=16)
 
-plt.show()
-#plt.savefig('../figures/Fig4_alignment.png', dpi=500)
+#plt.show()
+plt.savefig('../figures/Fig4_alignment.png', dpi=500)

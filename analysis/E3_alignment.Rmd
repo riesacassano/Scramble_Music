@@ -5,6 +5,7 @@ date: "`r Sys.Date()`"
 output:
   pdf_document: default
   html_document: default
+knit: (function(inputFile, encoding) {rmarkdown::render(inputFile, encoding = encoding, output_dir = "notebooks") })
 ---
 
 ```{r setup, include=FALSE}
@@ -26,7 +27,8 @@ set.seed(15000)
 
 Load the data.
 ```{r}
-data <- read_csv('../data/alignment_original.csv', show_col_types = FALSE)
+data <- read_csv('../data/E3/alignment_original.csv', show_col_types = FALSE)
+#data <- read_csv('../data/E3/alignment.csv', show_col_types = FALSE)
 ```
 
 Check number of subjects per group.
@@ -138,7 +140,7 @@ nested_3way <- brm(value ~ Musician + scramble + level + (1|sub), data = data_ne
                      set_prior('normal(-0.1, 0.1)', coef = c('level2', 'level4')) 
                    ),
                    save_pars = save_pars(all = TRUE), iter = 5000,
-                   file = '../models/E3_alignment_3way_noInt')
+                   file = 'models/E3_alignment_3way_noInt')
 ```
 
 ```{r}
@@ -162,7 +164,7 @@ nested_noMus <- brm(value ~ scramble + level + (1|sub), data = data_nested,
                      set_prior('normal(-0.1, 0.1)', coef = c('level2', 'level4')) 
                    ),
                    save_pars = save_pars(all = TRUE), iter = 5000,
-                   file = '../models/E3_alignment_2way_noMus')
+                   file = 'models/E3_alignment_2way_noMus')
 
 nested_noScram <- brm(value ~ Musician + level + (1|sub), data = data_nested,
                       prior = c(
@@ -171,7 +173,7 @@ nested_noScram <- brm(value ~ Musician + level + (1|sub), data = data_nested,
                      set_prior('normal(-0.1, 0.1)', coef = c('level2', 'level4')) 
                    ),
                    save_pars = save_pars(all = TRUE), iter = 5000,
-                   file = '../models/E3_alignment_2way_noScram')
+                   file = 'models/E3_alignment_2way_noScram')
 
 nested_noLevel <- brm(value ~ Musician + scramble + (1|sub), data = data_nested,
                       prior = c(
@@ -181,7 +183,7 @@ nested_noLevel <- brm(value ~ Musician + scramble + (1|sub), data = data_nested,
                      set_prior('normal(-0.1, 0.1)', coef = 'scramble4')
                    ),
                    save_pars = save_pars(all = TRUE), iter = 5000,
-                   file = '../models/E3_alignment_2way_noLevel')
+                   file = 'models/E3_alignment_2way_noLevel')
 ```
 
 \newpage
@@ -256,7 +258,7 @@ nested_justScram <- brm(value ~ scramble + (1|sub), data = data_nested,
                          set_prior('normal(-0.1, 0.1)', coef = 'scramble4')
                        ),
                        save_pars = save_pars(all = TRUE), iter = 5000,
-                       file = '../models/E3_alignment_justScram')
+                       file = 'models/E3_alignment_justScram')
 ```
 
 ```{r}
@@ -279,7 +281,7 @@ nested_2way_levelScram <- brm(value ~ scramble + scramble:level + (1|sub), data 
                          set_prior('normal(-0.1, 0.1)', coef = 'scramble4')
                        ),
                        save_pars = save_pars(all = TRUE), iter = 5000,
-                       file = '../models/E3_alignment_2way_levelScramInt')
+                       file = 'models/E3_alignment_2way_levelScramInt')
 ```
 
 ```{r}
@@ -306,7 +308,7 @@ nested_justLevel <- brm(value ~ level + (1|sub), data = data_nested,
                           set_prior('normal(-0.1, 0.1)', coef = c('level2', 'level4'))
                         ),
                         save_pars = save_pars(all = TRUE), iter = 5000,
-                       file = '../models/E3_alignment_justLevel')
+                       file = 'models/E3_alignment_justLevel')
 ```
 
 ```{r, include=FALSE}
@@ -322,7 +324,7 @@ nested_2way_musScram <- brm(value ~ scramble + scramble:Musician + (1|sub), data
                               set_prior('normal(-0.1, 0.1)', coef = 'scramble4')
                             ),
                             save_pars = save_pars(all = TRUE), iter = 5000,
-                            file = '../models/E3_alignment_2way_musScramInt')
+                            file = 'models/E3_alignment_2way_musScramInt')
 nested_2way_musLevel <- brm(value ~ level + level:Musician + (1|sub), data = data_nested,
                             prior = c(
                               set_prior('normal(0, 0.1)', class = 'b'), # all interactions
@@ -330,7 +332,7 @@ nested_2way_musLevel <- brm(value ~ level + level:Musician + (1|sub), data = dat
                               set_prior('normal(-0.1, 0.1)', coef = c('level2', 'level4'))
                             ),
                             save_pars = save_pars(all = TRUE), iter = 5000,
-                            file = '../models/E3_alignment_2way_musLevelInt')
+                            file = 'models/E3_alignment_2way_musLevelInt')
 ```
 
 \newpage
@@ -382,7 +384,7 @@ data1B <- filter(data, scramble == '1B')
 ```{r}
 levels1B_null <- brm(value ~ 1 + (1|sub), data = data1B,
                      save_pars = save_pars(all = TRUE), iter = 5000,
-                     file = '../models/E3_alignment_1B_null')
+                     file = 'models/E3_alignment_1B_null')
 ```
 
 ```{r}
@@ -402,7 +404,7 @@ levels1B <- brm(value ~ level + (1|sub), data = data1B,
                   set_prior('normal(-0.1, 0.1)', coef = c('level4', 'level7'))
                 ),
                 save_pars = save_pars(all = TRUE), iter = 5000,
-                file = '../models/E3_alignment_1B')
+                file = 'models/E3_alignment_1B')
 ```
 
 ```{r}
@@ -442,7 +444,7 @@ data2B <- filter(data, scramble == '2B')
 ```{r}
 levels2B_null <- brm(value ~ 1 + (1|sub), data = data2B,
                      save_pars = save_pars(all = TRUE), iter = 5000,
-                     file = '../models/E3_alignment_2B_null')
+                     file = 'models/E3_alignment_2B_null')
 ```
 
 ```{r}
@@ -458,7 +460,7 @@ levels2B <- brm(value ~ level + (1|sub), data = data2B,
                   set_prior('normal(-0.1, 0.1)', coef = c('level4', 'level7'))
                 ),
                 save_pars = save_pars(all = TRUE), iter = 5000,
-                file = '../models/E3_alignment_2B')
+                file = 'models/E3_alignment_2B')
 ```
 
 ```{r}
@@ -502,7 +504,7 @@ data8B <- filter(data, scramble == '8B')
 ```{r}
 levels8B_null <- brm(value ~ 1 + (1|sub), data = data8B,
                      save_pars = save_pars(all = TRUE), iter = 5000,
-                     file = '../models/E3_alignment_8B_null')
+                     file = 'models/E3_alignment_8B_null')
 ```
 
 ```{r}
@@ -518,7 +520,7 @@ levels8B <- brm(value ~ level + (1|sub), data = data8B,
                   set_prior('normal(-0.1, 0.1)', coef = c('level4', 'level7'))
                 ),
                 save_pars = save_pars(all = TRUE), iter = 5000,
-                file = '../models/E3_alignment_8B')
+                file = 'models/E3_alignment_8B')
 ```
 
 ```{r}
@@ -568,7 +570,7 @@ dataI <- filter(data, scramble == 'Intact')
 ```{r}
 levelsI_null <- brm(value ~ 1 + (1|sub), data = dataI,
                      save_pars = save_pars(all = TRUE), iter = 5000,
-                     file = '../models/E3_alignment_Intact_null')
+                     file = 'models/E3_alignment_Intact_null')
 ```
 
 ```{r}
@@ -584,7 +586,7 @@ levelsI <- brm(value ~ level + (1|sub), data = dataI,
                   set_prior('normal(-0.1, 0.1)', coef = c('level4', 'level7'))
                 ),
                 save_pars = save_pars(all = TRUE), iter = 5000,
-                file = '../models/E3_alignment_Intact')
+                file = 'models/E3_alignment_Intact')
 ```
 
 ```{r}
@@ -642,7 +644,7 @@ get_prior(value ~ scramble*level + (1|sub), data_longTS_M)
 longTS_M <- brm(value ~ scramble + level + (1|sub), data = data_longTS_M,
                 prior = set_prior('normal(0, 0.1)', class = 'b'),
                 save_pars = save_pars(all = TRUE), iter = 5000,
-                file = '../models/E3_alignment_longTimescales_mus')
+                file = 'models/E3_alignment_longTimescales_mus')
 ```
 
 ```{r}
@@ -655,7 +657,7 @@ print(summary(longTS_M), digits = 4)
 longTS_M_int <- brm(value ~ scramble*level + (1|sub), data = data_longTS_M,
                 prior = set_prior('normal(0, 0.1)', class = 'b'),
                 save_pars = save_pars(all = TRUE), iter = 5000,
-                file = '../models/E3_alignment_longTimescales_musInt')
+                file = 'models/E3_alignment_longTimescales_musInt')
 ```
 
 ```{r}
@@ -676,7 +678,7 @@ There is weak evidence for an interaction for musicians.
 longTS_NM <- brm(value ~ scramble + level + (1|sub), data = data_longTS_NM,
                 prior = set_prior('normal(0, 0.1)', class = 'b'),
                 save_pars = save_pars(all = TRUE), iter = 5000,
-                file = '../models/E3_alignment_longTimescales_nonmus')
+                file = 'models/E3_alignment_longTimescales_nonmus')
 ```
 
 ```{r}
@@ -689,7 +691,7 @@ print(summary(longTS_NM), digits = 4)
 longTS_NM_int <- brm(value ~ scramble*level + (1|sub), data = data_longTS_NM,
                 prior = set_prior('normal(0, 0.1)', class = 'b'),
                 save_pars = save_pars(all = TRUE), iter = 5000,
-                file = '../models/E3_alignment_longTimescales_nonmusInt')
+                file = 'models/E3_alignment_longTimescales_nonmusInt')
 ```
 
 ```{r}

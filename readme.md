@@ -92,7 +92,17 @@ The `analysis/models/` contains all of the fit Bayesian models used in the analy
 
 Data processing scripts (described above, stored in `analysis/data_processing/`) need to be run prior to any of the analysis notebooks described below.
 
-Each analysis notebook (`.Rmd` files) are meant to stand on their own, so they can be run in any order. However, (E3 exception)
+Each analysis notebook (`.Rmd` files) are meant to stand on their own, so they can be run in any order. However, for E3, `E3_alignment.Rmd` uses the output of `E3_compute_precision_sensitivity.ipynb`. The output of `E3_compute_precision_sensitivity.ipynb` is called `alignment.csv`. Because samples are randomly generated for the null distribution, there may be some variability in exact alignment values. `alignment_original.csv` contains the alignment values that we originally computed and reported in the paper.
+
+The order of analysis in the paper is:
+- `E1_memory.Rmd`
+- `E2_prediction.Rmd`
+- `E3_rate.Rmd`
+- `E3_compute_precision_sensitivity.ipynb` (`E3_figure4.py`)
+- `E3_alignment.Rmd`
+- `E3_pitch_and_rhythm.Rmd`
+- `E4_categorization.Rmd`
+- `E4_confusion_matrix.R`
 
 
 ## Notebook PDFs
@@ -109,3 +119,8 @@ All `.Rmd` and `.ipynb` files are knit or downloaded as a PDF version, so viewer
 `analysis/E1_memory.Rmd` generates figures 2A and S1A. `analysis/E2_memory.Rmd` generates figures 2B and S1B. `analysis/E4_categorization.Rmd` generates figures 5 and S1C. `analysis/E4_confusion_matrix.R` generates figure 6. Multi-panel figures are combined manually in `figures/combined figures.pptx` and saved in `figures/`.
 
 ## Experiment 3 (Event segmentation)
+
+`analysis/E3_rate.Rmd` generates figure 3. `analysis/E3_compute_precision_sensitivity.ipynb` generates figure 4. To skip the alignment computation and just generate figure 4, `analysis/E3_figure4.py` is a simple python script that does that using `data/E3/alignment_original.csv`.
+
+
+
