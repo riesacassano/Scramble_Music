@@ -7,14 +7,17 @@ import pandas as pd
 # load the file list
 folder = '../data/primary/individual_participants/'
 file_list = os.listdir(folder)
+file_list.sort()
 
 df_list = []
 
 for entry in file_list:
-#for i in range(2):
+#for i in range(3):
 #	entry = file_list[i]
 	filepath = folder + entry
 	print(entry)
+	
+	if '.DS' in filepath: continue
 	if '.csv' in filepath: this_file = pd.read_csv(filepath)
 	#print(this_file)
 	
@@ -24,9 +27,6 @@ for entry in file_list:
 	# subjects 350110, 483538, 481798, 334102, and 481810 have incomplete datasets
 	# but enough data that we include them in the analysis
 	
-	# check header anomalies
-	#if this_file.columns[1] != "Block_Name": print(entry, this_file.columns[1])
-
 	# select the columns of interest
 	# exp_subject_id
 	# Task_Name
@@ -38,7 +38,8 @@ for entry in file_list:
 		this_file1 = this_file[['exp_subject_id', 'Task_Name', 'Trial_Nr', 'response', 'response_seg2']]
 	else: 
 		this_file1 = this_file[['exp_subject_id', 'Task_Name', 'Trial_Nr', 'response']]
-		this_file1['response_seg2'] = np.nan
+		this_file1['response_seg2'] = np.nan 
+		# this sometimes throws a SettingWithCopyWarning that can safely (?) be ignored
 	this_file2 = this_file.filter(like = 'scramble')
 
 	this_file_selected = pd.concat([this_file1, this_file2], axis=1)
