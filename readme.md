@@ -23,7 +23,7 @@ Descriptions of the variables are in `data/data_dictionaries/primary_data_dictio
 
 All data in these folders (`data/E1-E2-E4/` and `data/E3/`) are produced by the data processing steps described here *except* `data/E3/alignment_original.csv` (see note below).
 
-The scripts described in the following steps are found in `analysis/data_processing/` and need to be run prior to running the analysis notebooks (described below). Columns are described in respective data dictionaries in `data/data_dictionaries/`.
+The scripts described in the following steps are found in `analysis/data_processing/` and need to be run prior to running the analysis notebooks (described below). **The scripts should be run from the `analysis` folder.** Columns are described in respective data dictionaries in `data/data_dictionaries/`.
 
 Steps for experiments 1, 2, and 4:
 1. `E124_raw_data_combining.py` combines the raw data for these three experiments from `data/primary/` and saves it in `data/E1-E2-E4/`
