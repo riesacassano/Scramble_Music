@@ -67,7 +67,7 @@ prior_intercept <- set_prior('normal(log(0.65 / (1 - 0.65)), 1)', class = 'Inter
 
 In this range, a difference in 0.25 log odds gives us about a 5% decrease in accuracy.
 ```{r}
-prior_mus <- set_prior('normal(-0.25, 1)', coef = 'Musician1')
+prior_mus <- set_prior('normal(-0.25, 1)', coef = 'MusicianNo')
 ```
 
 **Scramble:** We expect performance to improve as scramble level decreases. If we code 8B as reference level, then we expect 8B > 2B and 8B > 1B.
@@ -83,9 +83,9 @@ prior_scramble1B <- set_prior('normal(-0.3, 1)', coef = 'scramble4')
 **Interaction:** We expect no interaction between group and scramble.
 
 ```{r}
-prior_int8B <- set_prior('normal(0, 1)', coef = 'Musician1:scramble2')
-prior_int2B <- set_prior('normal(0, 1)', coef = 'Musician1:scramble3')
-prior_int1B <- set_prior('normal(0, 1)', coef = 'Musician1:scramble4') 
+prior_int8B <- set_prior('normal(0, 1)', coef = 'MusicianNo:scramble2')
+prior_int2B <- set_prior('normal(0, 1)', coef = 'MusicianNo:scramble3')
+prior_int1B <- set_prior('normal(0, 1)', coef = 'MusicianNo:scramble4') 
 ```
 
 **Random slope for subjects:**
