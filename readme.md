@@ -30,7 +30,7 @@ Steps for experiments 1, 2, and 4:
 2. `E124_raw_data_wrangling.R` takes the combined version of the data, cleans it up, and saves it in separate files for each task (in the `data/E1-E2-E4/` folder: `memory.csv`, `prediction.csv`, `categorization.csv`).
 
 Steps for experiment 3:
-1. `E3_raw_data_combining.py` combines the raw data for experiment 3, dataset A from `data/primary/` and saves it in `data/E3/`
+1. `E3_raw_data_combining.py` combines the raw data for dataset 3A from `data/primary/` and saves it in `data/E3/`
 2. `E3_raw_data_wrangling.Rmd` takes the combined version of dataset 3A, adds the additional subjects from `subs_additional_E3A.xlsx`, and computes response rate and extracts timestamps. It then computes rate and extracts timestamps from dataset 3B, standardizes column names, and combines across datasets. Processed data is saved in `data/E3/`.
 
 (Participants in dataset A who heard set 2 are excluded from this analysis. Participants in dataset B heard set 1, and since set 1 and set 2 are highly overlapping, we didn't want to overrepresent certain stimuli in our results.)
