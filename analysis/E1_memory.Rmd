@@ -37,7 +37,7 @@ data %<>%
   mutate(exp_subject_id = as.factor(exp_subject_id),
          response = ifelse(response == 'Correct', TRUE, FALSE),
          scramble = factor(scramble, levels = c('8B', '2B', '1B')),
-         Musician = factor(Musician, levels = c('Yes', 'No'))) %>%
+         Musician = factor(Musician, levels = c('No', 'Yes'))) %>%
   filter(!is.na(response))
 ```
 
@@ -46,6 +46,13 @@ Set the contrast for condition.
 ```{r}
 contrasts(data$scramble) <- contr.treatment(3)
 print(contrasts(data$scramble))
+```
+
+Set the musician/non-musician contrast.
+
+```{r}
+contrasts(data$Musician) <- contr.sum(2)
+print(contrasts(data$Musician))
 ```
 
 \newpage
@@ -66,7 +73,7 @@ prior_intercept <- set_prior('normal(log(0.8 / (1 - 0.8)), 1)', class = 'Interce
 
 In this range, a difference in 0.25 log odds gives us about a 5% decrease in accuracy.
 ```{r}
-prior_mus <- set_prior('normal(-0.25, 1)', coef = 'MusicianNo')
+prior_mus <- set_prior('normal(-0.25, 1)', coef = 'Musician1')
 ```
 
 **Scramble:** We expect performance to improve as scramble level decreases. If we code 8B as reference level, then we expect 8B > 2B and 8B > 1B.
@@ -81,8 +88,8 @@ prior_scramble1B <- set_prior('normal(-0.2, 1)', coef = 'scramble3')
 **Interaction:** We expect no interaction between group and scramble.
 
 ```{r}
-prior_int2B <- set_prior('normal(0, 1)', coef = 'MusicianNo:scramble2')
-prior_int1B <- set_prior('normal(0, 1)', coef = 'MusicianNo:scramble3') 
+prior_int2B <- set_prior('normal(0, 1)', coef = 'Musician1:scramble2')
+prior_int1B <- set_prior('normal(0, 1)', coef = 'Musician1:scramble3') 
 ```
 
 **Random slope for subjects:**
