@@ -25,6 +25,9 @@ This notebook analyzes categorization using Bayesian binomial generalized linear
 
 ```{r}
 set.seed(15000)
+# other seeds for stability checks
+#set.seed(20)
+#set.seed(20000)
 ```
 
 ```{r}
@@ -107,7 +110,7 @@ mus_scram <- brm(response ~ Musician + scramble + (1 | exp_subject_id), data = d
                  family = bernoulli(),
                  prior = c(prior_intercept, prior_mus, 
                            prior_scramble8B, prior_scramble2B, prior_scramble1B),
-                 save_pars = save_pars(all = TRUE), iter = 5000,
+                 save_pars = save_pars(all = TRUE), iter = 10000,
                  file = 'models/E4_mus_scram')
 ```
 
@@ -159,7 +162,7 @@ To get the main effect of scramble level, fit the "null" model with group only t
 mus_only <- brm(response ~ Musician + (1 | exp_subject_id), data = data,
                  family = bernoulli(),
                  prior = c(prior_intercept, prior_mus),
-                 save_pars = save_pars(all = TRUE), iter = 5000,
+                 save_pars = save_pars(all = TRUE), iter = 10000,
                  file = 'models/E4_mus_only')
 ```
 
@@ -190,7 +193,7 @@ mus_scram_int <- brm(response ~ Musician*scramble + (1 | exp_subject_id), data =
                  prior = c(prior_intercept, prior_mus, 
                            prior_scramble8B, prior_scramble2B, prior_scramble1B,
                            prior_int8B, prior_int2B, prior_int1B),
-                 save_pars = save_pars(all = TRUE), iter = 5000,
+                 save_pars = save_pars(all = TRUE), iter = 10000,
                  file = 'models/E4_mus_scram_int')
 ```
 
@@ -286,7 +289,7 @@ these_priors <- c(
 ```{r}
 years_mus_scram <- brm(accuracy ~ scramble + yrs_mus_exp + (1|exp_subject_id), data = yrs_exp,
                    prior = these_priors,
-                   save_pars = save_pars(all = TRUE), iter = 5000,
+                   save_pars = save_pars(all = TRUE), iter = 10000,
                    file = 'models/E4_years')
 ```
 
@@ -302,7 +305,7 @@ years_mus <- brm(accuracy ~ yrs_mus_exp + (1|exp_subject_id), data = yrs_exp,
                  prior = c(
                    set_prior('normal(0.625, 0.1)', class = 'Intercept'),
                    set_prior('normal(0, 0.1)', coef = 'yrs_mus_exp')),
-                 save_pars = save_pars(all = TRUE), iter = 5000,
+                 save_pars = save_pars(all = TRUE), iter = 10000,
                  file = 'models/E4_years_null')
 ```
 

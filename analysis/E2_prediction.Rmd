@@ -26,6 +26,9 @@ This notebook analyzes prediction using Bayesian binomial generalized linear mix
 
 ```{r}
 set.seed(15000)
+# other seeds for stability checks
+#set.seed(20)
+#set.seed(20000)
 ```
 
 ```{r}
@@ -109,7 +112,7 @@ mus_scram <- brm(response ~ Musician + scramble + (1 | exp_subject_id), data = d
                  family = bernoulli(),
                  prior = c(prior_intercept, prior_mus, 
                            prior_scramble2B, prior_scramble1B),
-                 save_pars = save_pars(all = TRUE), iter = 5000,
+                 save_pars = save_pars(all = TRUE), iter = 10000,
                  file = 'models/E2_mus_scram')
 ```
 
@@ -161,7 +164,7 @@ To get the main effect of scramble level, fit the "null" model with group only t
 mus_only <- brm(response ~ Musician + (1 | exp_subject_id), data = data,
                  family = bernoulli(),
                  prior = c(prior_intercept, prior_mus),
-                 save_pars = save_pars(all = TRUE), iter = 5000,
+                 save_pars = save_pars(all = TRUE), iter = 10000,
                  file = 'models/E2_mus_only')
 ```
 
@@ -192,7 +195,7 @@ mus_scram_int <- brm(response ~ Musician*scramble + (1 | exp_subject_id), data =
                  prior = c(prior_intercept, prior_mus, 
                            prior_scramble2B, prior_scramble1B,
                            prior_int2B, prior_int1B),
-                 save_pars = save_pars(all = TRUE), iter = 5000,
+                 save_pars = save_pars(all = TRUE), iter = 10000,
                  file = 'models/E2_mus_scram_int')
 ```
 
@@ -272,7 +275,7 @@ get_prior(response ~ 1 + (1 | exp_subject_id), data = data1B)
 ```{r}
 only1B <- brm(response ~ 1 + (1 | exp_subject_id), data = data1B,
               family = bernoulli(),
-              save_pars = save_pars(all = TRUE), iter = 5000,
+              save_pars = save_pars(all = TRUE), iter = 10000,
               file = 'models/E2_only1B')
 ```
 
@@ -309,7 +312,7 @@ no1B <- brm(response ~ Musician + scramble + (1 | exp_subject_id), data = data_n
             prior = c(
               prior_intercept, prior_mus, set_prior('normal(-0.1, 1)', coef = 'scramble2B')
               ),
-            save_pars = save_pars(all = TRUE), iter = 5000,
+            save_pars = save_pars(all = TRUE), iter = 10000,
             file = 'models/E2_no1B')
 ```
 
@@ -330,9 +333,9 @@ no1B_int <- brm(response ~ Musician*scramble + (1 | exp_subject_id), data = data
                 prior = c(
                   prior_intercept, prior_mus, 
                   set_prior('normal(-0.1, 1)', coef = 'scramble2B'),
-                  set_prior('normal(0, 1)', coef = 'MusicianNo:scramble2B')
+                  set_prior('normal(0, 1)', coef = 'Musician1:scramble2B')
                   ),
-                save_pars = save_pars(all = TRUE), iter = 5000,
+                save_pars = save_pars(all = TRUE), iter = 10000,
                 file = 'models/E2_no1B_int')
 ```
 
@@ -384,7 +387,7 @@ these_priors <- c(
 ```{r}
 years_mus_scram <- brm(accuracy ~ scramble + yrs_mus_exp + (1|exp_subject_id), data = yrs_exp,
                    prior = these_priors,
-                   save_pars = save_pars(all = TRUE), iter = 5000,
+                   save_pars = save_pars(all = TRUE), iter = 10000,
                    file = 'models/E2_years')
 ```
 
@@ -400,7 +403,7 @@ years_mus <- brm(accuracy ~ yrs_mus_exp + (1|exp_subject_id), data = yrs_exp,
                  prior = c(
                    set_prior('normal(0.75, 0.1)', class = 'Intercept'),
                    set_prior('normal(0, 0.1)', coef = 'yrs_mus_exp')),
-                 save_pars = save_pars(all = TRUE), iter = 5000,
+                 save_pars = save_pars(all = TRUE), iter = 10000,
                  file = 'models/E2_years_null')
 ```
 
