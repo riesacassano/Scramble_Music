@@ -7,6 +7,7 @@ import pandas as pd
 # load the file list
 folder = '../data/primary/individual_participants/'
 file_list = os.listdir(folder)
+file_list.sort()
 
 df_list = []
 count = 0
