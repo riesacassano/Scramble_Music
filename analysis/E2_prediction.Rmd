@@ -16,6 +16,7 @@ library(magrittr) # version 2.0.3
 library(brms) # version 2.22.0
 library(bayestestR) # version 0.15.0
 library(emmeans) # version 1.10.0
+library(logspline) # version 2.1.22
 ```
 
 This notebook analyzes prediction using Bayesian binomial generalized linear mixed effects models (GLMMs).
