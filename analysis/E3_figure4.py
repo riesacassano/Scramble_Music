@@ -1,4 +1,4 @@
-# This script generates figure 4 (with legends for both panels). For computation of the alignment values see `E3_compute_precision_sensitivity.ipynb`
+# This script generates figure 4 (with legends for both panels). For computation of the alignment values see `E3_compute_precision_sensitivity.ipynb`.
 
 import numpy as np # version 1.26.4
 import pandas as pd # version 2.1.4
@@ -7,8 +7,7 @@ plt.rcParams["font.family"] = "Arial"
 plt.rcParams["font.size"] = 12
 
 # load the data
-data = pd.read_csv('../data/E3/alignment_original.csv')
-#data = pd.read_csv('../data/E3/alignment.csv')
+data = pd.read_csv('../data/E3/alignment.csv')
 
 # make the subject label categorical
 data['sub'] = data['sub'].astype('category')
