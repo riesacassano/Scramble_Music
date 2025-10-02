@@ -122,6 +122,10 @@ contrast(emm_1B, method = "pairwise")
 
 No differences between any levels.
 
+```{r}
+rm(levels1B)
+rm(levels1B_null)
+```
 
 \newpage
 
@@ -182,6 +186,11 @@ contrast(emm_2B, method = "pairwise")
 1 > 16, 2 > 16, 3 > 16, 4 > 16, 5 > 16, 8 > 16
 
 2 > 3
+
+```{r}
+rm(levels2B)
+rm(levels2B_null)
+```
 
 
 \newpage
@@ -250,6 +259,11 @@ contrast(emm_8B, method = "pairwise")
 
 Phrase level greater than all others. Structurally relevant levels (2,4,8,16) are consistently greater than structurally irrelevant levels (3,5), BUT participants align to longer SRL (4,8) more than 2 - consistent with lower rate of response
 
+```{r}
+rm(levels8B)
+rm(levels8B_null)
+```
+
 \newpage
 
 # Intact
@@ -306,6 +320,11 @@ contrast(emm_I, method = "pairwise")
 ```
 
 8 > 3, 8 > 4, 8 > 5
+
+```{r}
+rm(levelsI)
+rm(levelsI_null)
+```
 
 \newpage
 
