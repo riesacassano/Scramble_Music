@@ -79,7 +79,7 @@ data_nested %<>% mutate(
 
 contrasts(data_nested$scramble) <- contr.treatment(4) # Intact as reference
 contrasts(data_nested$level) <- contr.treatment(4, base = 3) # 8-bar as reference
-contrasts(data$Musician) <- c(-1,1)
+contrasts(data_nested$Musician) <- c(-1,1)
 ```
 
 Check normality of the data.
