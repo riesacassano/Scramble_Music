@@ -44,6 +44,13 @@ Set Intact as reference level.
 contrasts(data$scramble) <- contr.treatment(4)
 ```
 
+Set the musician/non-musician contrast.
+
+```{r}
+contrasts(data$Musician) <- contr.sum(2)
+print(contrasts(data$Musician))
+```
+
 \newpage
 
 Check normality of the true response rate data. (Ignoring stimulus set.)
