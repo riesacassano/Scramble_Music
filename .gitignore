@@ -3,4 +3,5 @@
 .Rhistory
 .ipynb_checkpoints/
 analysis/notebooks_stability_checks/
+models/*/
 *.DS_Store
