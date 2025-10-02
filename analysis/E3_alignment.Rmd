@@ -27,8 +27,7 @@ set.seed(15000)
 
 Load the data.
 ```{r}
-data <- read_csv('../data/E3/alignment_original.csv', show_col_types = FALSE)
-#data <- read_csv('../data/E3/alignment.csv', show_col_types = FALSE)
+data <- read_csv('../data/E3/alignment.csv', show_col_types = FALSE)
 ```
 
 Check number of subjects per group.
