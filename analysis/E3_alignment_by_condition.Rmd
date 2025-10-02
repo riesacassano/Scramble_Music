@@ -104,7 +104,7 @@ print(summary(levels1B, robust = TRUE), digits = 4)
 
 ```{r}
 BF_1B_level <- bayes_factor(levels1B, levels1B_null)
-print(BF_1B_level)
+print(formatC(BF_1B_level$bf, format = 'e'))
 ```
 
 There is very strong evidence against a main effect of level.
@@ -303,7 +303,7 @@ print(summary(levelsI, robust = TRUE), digits = 4)
 
 ```{r}
 BF_I_level <- bayes_factor(levelsI, levelsI_null)
-print(BF_I_level)
+print(formatC(BF_I_level$bf, format = 'e'))
 ```
 
 There is strong evidence against an effect of level.
