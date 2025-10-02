@@ -38,7 +38,7 @@ data %<>%
   mutate(exp_subject_id = as.factor(exp_subject_id),
          response = ifelse(response == 'Correct', TRUE, FALSE),
          scramble = factor(scramble, levels = c('Intact', '8B', '2B', '1B')),
-         Musician = factor(Musician, levels = c('No', 'Yes'))) %>%
+         Musician = factor(Musician, levels = c('Yes', 'No'))) %>%
   filter(!is.na(response))
 ```
 
@@ -52,7 +52,7 @@ print(contrasts(data$scramble))
 Set the musician/non-musician contrast.
 
 ```{r}
-contrasts(data$Musician) <- contr.sum(2)
+contrasts(data$Musician) <- c(-1,1)
 print(contrasts(data$Musician))
 ```
 

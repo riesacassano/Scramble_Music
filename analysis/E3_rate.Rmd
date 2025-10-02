@@ -47,7 +47,7 @@ contrasts(data$scramble) <- contr.treatment(4)
 Set the musician/non-musician contrast.
 
 ```{r}
-contrasts(data$Musician) <- contr.sum(2)
+contrasts(data$Musician) <- c(-1,1)
 print(contrasts(data$Musician))
 ```
 
