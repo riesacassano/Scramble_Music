@@ -116,7 +116,7 @@ plot(mus_scram)
 ```
 
 ```{r}
-print(summary(mus_scram), digits = 4)
+print(summary(mus_scram, robust = TRUE), digits = 4)
 ```
 
 ```{r}
@@ -168,7 +168,7 @@ plot(mus_only)
 ```
 
 ```{r}
-print(summary(mus_only), digits = 4)
+print(summary(mus_only, robust = TRUE), digits = 4)
 ```
 
 ```{r}
@@ -199,7 +199,7 @@ plot(mus_scram_int)
 ```
 
 ```{r}
-print(summary(mus_scram_int), digits = 4)
+print(summary(mus_scram_int, robust = TRUE), digits = 4)
 ```
 
 
@@ -292,7 +292,7 @@ years_mus_scram <- brm(accuracy ~ scramble + yrs_mus_exp + (1|exp_subject_id), d
 
 ```{r}
 plot(years_mus_scram)
-print(summary(years_mus_scram), digits = 4)
+print(summary(years_mus_scram, robust = TRUE), digits = 4)
 ```
 
 ## Null model (for plotting purposes)
@@ -308,7 +308,7 @@ years_mus <- brm(accuracy ~ yrs_mus_exp + (1|exp_subject_id), data = yrs_exp,
 
 ```{r}
 plot(years_mus)
-print(summary(years_mus), digits = 4)
+print(summary(years_mus, robust = TRUE), digits = 4)
 ```
 
 \newpage

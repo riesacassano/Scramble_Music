@@ -136,7 +136,7 @@ brm_log_rate <- brm(log_rate ~ Musician + scramble + (1|exp_subject_id), data = 
 
 ```{r}
 plot(brm_log_rate)
-print(summary(brm_log_rate), digits = 4)
+print(summary(brm_log_rate, robust = TRUE), digits = 4)
 ```
 
 \newpage
@@ -179,7 +179,7 @@ brm_log_rate_null <- brm(log_rate ~ Musician + (1|exp_subject_id), data = data,
 
 ```{r}
 plot(brm_log_rate_null)
-print(summary(brm_log_rate_null), digits = 4)
+print(summary(brm_log_rate_null, robust = TRUE), digits = 4)
 ```
 
 ```{r}

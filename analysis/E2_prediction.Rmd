@@ -118,7 +118,7 @@ plot(mus_scram)
 ```
 
 ```{r}
-print(summary(mus_scram), digits = 4)
+print(summary(mus_scram, robust = TRUE), digits = 4)
 ```
 
 ```{r}
@@ -170,7 +170,7 @@ plot(mus_only)
 ```
 
 ```{r}
-print(summary(mus_only), digits = 4)
+print(summary(mus_only, robust = TRUE), digits = 4)
 ```
 
 ```{r}
@@ -201,7 +201,7 @@ plot(mus_scram_int)
 ```
 
 ```{r}
-print(summary(mus_scram_int), digits = 4)
+print(summary(mus_scram_int, robust = TRUE), digits = 4)
 ```
 
 
@@ -278,7 +278,7 @@ only1B <- brm(response ~ 1 + (1 | exp_subject_id), data = data1B,
 
 ```{r}
 plot(only1B)
-print(summary(only1B), digits = 4)
+print(summary(only1B, robust = TRUE), digits = 4)
 ```
 
 Is intercept different from 0?
@@ -315,7 +315,7 @@ no1B <- brm(response ~ Musician + scramble + (1 | exp_subject_id), data = data_n
 
 ```{r}
 plot(no1B)
-print(summary(no1B), digits = 4)
+print(summary(no1B, robust = TRUE), digits = 4)
 ```
 
 
@@ -339,7 +339,7 @@ no1B_int <- brm(response ~ Musician*scramble + (1 | exp_subject_id), data = data
 
 ```{r}
 plot(no1B_int)
-print(summary(no1B_int), digits = 4)
+print(summary(no1B_int, robust = TRUE), digits = 4)
 ```
 
 ```{r}
@@ -390,7 +390,7 @@ years_mus_scram <- brm(accuracy ~ scramble + yrs_mus_exp + (1|exp_subject_id), d
 
 ```{r}
 plot(years_mus_scram)
-print(summary(years_mus_scram), digits = 5)
+print(summary(years_mus_scram), robust = TRUE, digits = 5)
 ```
 
 ## Null model (for plotting purposes)
@@ -406,7 +406,7 @@ years_mus <- brm(accuracy ~ yrs_mus_exp + (1|exp_subject_id), data = yrs_exp,
 
 ```{r}
 plot(years_mus)
-print(summary(years_mus), digits = 4)
+print(summary(years_mus, robust = TRUE), digits = 4)
 ```
 
 \newpage
