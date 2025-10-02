@@ -37,7 +37,7 @@ data %<>%
   mutate(exp_subject_id = as.factor(exp_subject_id),
          response = ifelse(response == 'Correct', TRUE, FALSE),
          scramble = factor(scramble, levels = c('8B', '2B', '1B')),
-         Musician = factor(Musician, levels = c('No', 'Yes'))) %>%
+         Musician = factor(Musician, levels = c('Yes', 'No'))) %>%
   filter(!is.na(response))
 ```
 
@@ -51,9 +51,10 @@ print(contrasts(data$scramble))
 Set the musician/non-musician contrast.
 
 ```{r}
-contrasts(data$Musician) <- contr.sum(2)
+contrasts(data$Musician) <- c(-1,1)#contr.sum(2)
 print(contrasts(data$Musician))
 ```
+
 
 \newpage
 
@@ -244,7 +245,7 @@ ggplot() +
   #ylim(0, 0.85) +
   xlab('Scramble Level') +
   ylab('Posterior Distribution of\nProportion Correct (Memory)') +
-  scale_fill_discrete(name="", labels=c('Non-musicians', 'Musicians')) +
+  scale_fill_discrete(name="", labels=c('Musicians', 'Non-musicians')) +
   theme(legend.text = element_text(size = 12))
 
 ggsave('../figures/Fig2A_memory.png', width = 7, height = 5)
