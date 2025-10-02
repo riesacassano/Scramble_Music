@@ -24,10 +24,10 @@ This notebook analyzes categorization using Bayesian binomial generalized linear
 # Set up
 
 ```{r}
-#set.seed(15000)
+set.seed(15000)
 # other seeds for stability checks
 #set.seed(20)
-set.seed(20000)
+#set.seed(20000)
 ```
 
 ```{r}
@@ -246,7 +246,7 @@ ggplot() +
   ylim(0, 0.85) +
   xlab('Scramble Level') +
   ylab('Posterior Distribution of\nProportion Correct') +
-  scale_fill_discrete(name="", labels=c('Musicians', 'Non-musicians')) +
+  scale_fill_discrete(name="", labels=c('Non-musicians', 'Musicians')) +
   theme(legend.text = element_text(size = 12))
 
 ggsave('../figures/Fig5_categorization.png', width = 7, height = 5)
