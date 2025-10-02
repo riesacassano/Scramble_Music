@@ -366,12 +366,12 @@ print(summary(nested_2way_musLevel, robust = TRUE), digits = 4)
 
 ```{r}
 BF_nested_2way_musScram <- bayes_factor(nested_2way_musScram, nested_justScram)
-print(BF_nested_2way_musScram)
+print(formatC(BF_nested_2way_musScram$bf, format = 'e'))
 ```
 
 ```{r}
 BF_nested_2way_musLevel <- bayes_factor(nested_2way_musLevel, nested_justLevel)
-print(BF_nested_2way_musLevel)
+print(formatC(BF_nested_2way_musLevel$bf, format = 'e'))
 ```
 
 Very strong evidence against interactions between group and condition and group and level.
