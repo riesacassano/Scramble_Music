@@ -28,7 +28,7 @@ set.seed(15000)
 Load the data.
 
 ```{r}
-data <- read_csv("../data/E3/response_rate_by_sub.csv")
+data <- read_csv('../data/E3/response_rate_by_sub.csv', show_col_types = FALSE)
 ```
 
 Change musician and scramble into a factor.

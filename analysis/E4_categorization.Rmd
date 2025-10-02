@@ -28,7 +28,7 @@ set.seed(15000)
 ```
 
 ```{r}
-data <- read_csv('../data/E1-E2-E4/categorization.csv')
+data <- read_csv('../data/E1-E2-E4/categorization.csv', show_col_types = FALSE)
 ```
 
 Convert variables to factors.
