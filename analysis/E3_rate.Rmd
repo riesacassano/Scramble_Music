@@ -117,7 +117,7 @@ get_prior(log_rate ~ Musician + scramble + (1|exp_subject_id), data = data)
 
 ```{r}
 these_priors <- c(
-  set_prior('normal(0, 0.5)', coef = "MusicianNo"), # don't necessarily expect a difference between groups
+  set_prior('normal(0, 0.5)', coef = "Musician1"), # don't necessarily expect a difference between groups
   set_prior('normal(0, 0.5)', coef = "scramble2"), # intact vs 8B 
   set_prior('normal(0, 0.5)', coef = "scramble3"), # intact vs 2B 
   set_prior('normal(0, 0.5)', coef = "scramble4") # intact vs 1B 
