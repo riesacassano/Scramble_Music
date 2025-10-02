@@ -121,7 +121,7 @@ these_priors <- c(
 brm_log_rate <- brm(log_rate ~ Musician + scramble + (1|exp_subject_id), data = data,
                     prior = these_priors,
                     save_pars = save_pars(all = TRUE), 
-                    iter = 5000, refresh = 0,
+                    iter = 20000, refresh = 0,
                     file = 'models/E3_log_rate')
 ```
 
@@ -166,7 +166,7 @@ Compare the full model to a model without scramble condition.
 brm_log_rate_null <- brm(log_rate ~ Musician + (1|exp_subject_id), data = data,
                          prior = set_prior('normal(0, 0.5)', class = 'b'),
                          save_pars = save_pars(all = TRUE), 
-                         iter = 5000, refresh = 0,
+                         iter = 20000, refresh = 0,
                          file = 'models/E3_log_rate_null')
 ```
 
