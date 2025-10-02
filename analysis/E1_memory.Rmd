@@ -25,9 +25,6 @@ This notebook analyzes memory using Bayesian binomial generalized linear mixed e
 
 ```{r}
 set.seed(15000)
-# other seeds for stability checks
-#set.seed(20)
-#set.seed(20000)
 ```
 
 ```{r}
