@@ -243,7 +243,7 @@ ggplot() +
   ylim(0, 0.85) +
   xlab('Scramble Level') +
   ylab('Posterior Distribution of\nProportion Correct') +
-  scale_fill_discrete(name="", labels=c('Non-musicians', 'Musicians')) +
+  scale_fill_discrete(name="", labels=c('Musicians', 'Non-musicians')) +
   theme(legend.text = element_text(size = 12))
 
 ggsave('../figures/Fig5_categorization.png', width = 7, height = 5)
