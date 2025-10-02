@@ -101,6 +101,7 @@ The order of analysis in the paper is:
 - `E3_rate.Rmd`
 - `E3_compute_precision_sensitivity.ipynb` (`E3_figure4.py`)
 - `E3_alignment.Rmd`
+- `E3_alignment_by_condition.Rmd`
 - `E3_pitch_and_rhythm.Rmd`
 - `E4_categorization.Rmd`
 - `E4_confusion_matrix.R`

@@ -1,0 +1,401 @@
+---
+title: "E3 alignment"
+author: "R. Cassano-Coleman"
+date: "`r Sys.Date()`"
+output:
+  pdf_document: default
+  html_document: default
+knit: (function(inputFile, encoding) {rmarkdown::render(inputFile, encoding = encoding, output_dir = "notebooks") })
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse) # version 2.0.0
+library(magrittr) # version 2.0.3
+library(rstatix) # version 0.7.2
+
+library(brms) # version 2.22.0
+library(bayestestR) # version 0.15.0
+library(emmeans) # version 1.10.0
+```
+
+This notebook analyzes alignment values using a Bayesian approach.
+
+```{r}
+set.seed(15000)
+```
+
+Load the data.
+```{r}
+data <- read_csv('../data/E3/alignment.csv', show_col_types = FALSE)
+```
+
+Check number of subjects per group.
+
+```{r}
+length(unique(filter(data, Musician == 'Yes')$sub))
+length(unique(filter(data, Musician == 'No')$sub))
+```
+
+
+Make sure non-musicians and musicians are labelled with different numbers.
+```{r}
+data %<>% mutate(sub = ifelse(Musician == 'Yes', sub, sub + 49))
+```
+
+Pivot the data longer.
+```{r}
+data %<>% pivot_longer(cols = -c(Musician, sub, scramble), 
+                       names_to = 'level', values_to = 'value')
+```
+
+Make group, scramble, and level into factors and set contrasts.
+```{r}
+data %<>% mutate(
+  Musician = factor(Musician, levels = c('Yes', 'No')),
+  scramble = factor(scramble, levels = c('Intact', '8B', '2B', '1B')),
+  level = factor(level, levels = c(1,2,3,4,5,8,16), ordered = TRUE)
+  )
+
+contrasts(data$scramble) <- contr.treatment(4) # Intact as reference
+contrasts(data$level) <- contr.treatment(7, base = 6) # 8-bar as reference
+contrasts(data$Musician) <- c(-1,1)
+```
+
+\newpage
+
+# 1B
+
+```{r}
+data1B <- filter(data, scramble == '1B')
+```
+
+```{r}
+levels1B_null <- brm(value ~ 1 + (1|sub), data = data1B,
+                     save_pars = save_pars(all = TRUE), 
+                     iter = 20000, refresh = 0,
+                     file = 'models/E3_alignment_1B_null')
+```
+
+```{r}
+plot(levels1B_null)
+print(summary(levels1B_null, robust = TRUE), digits = 4)
+```
+
+
+```{r, include=FALSE}
+get_prior(value ~ level + (1|sub), data = data1B)
+```
+
+```{r}
+levels1B <- brm(value ~ level + (1|sub), data = data1B,
+                prior = c(
+                  set_prior('normal(-0.2, 0.1)', coef = c('level1', 'level2', 'level3', 'level5')),
+                  set_prior('normal(-0.1, 0.1)', coef = c('level4', 'level7'))
+                ),
+                save_pars = save_pars(all = TRUE), iter = 20000, refresh = 0,
+                file = 'models/E3_alignment_1B')
+```
+
+```{r}
+plot(levels1B)
+print(summary(levels1B, robust = TRUE), digits = 4)
+```
+
+```{r}
+BF_1B_level <- bayes_factor(levels1B, levels1B_null)
+print(BF_1B_level)
+```
+
+There is very strong evidence against a main effect of level.
+
+```{r}
+emm_1B <- emmeans(levels1B, specs = "level")
+summary(emm_1B)
+```
+
+All levels at chance.
+
+```{r}
+contrast(emm_1B, method = "pairwise")
+```
+
+No differences between any levels.
+
+
+\newpage
+
+# 2B
+
+```{r}
+data2B <- filter(data, scramble == '2B')
+```
+
+```{r}
+levels2B_null <- brm(value ~ 1 + (1|sub), data = data2B,
+                     save_pars = save_pars(all = TRUE), 
+                     iter = 20000, refresh = 0,
+                     file = 'models/E3_alignment_2B_null')
+```
+
+```{r}
+plot(levels2B_null)
+print(summary(levels2B_null, robust = TRUE), digits = 4)
+```
+
+
+```{r}
+levels2B <- brm(value ~ level + (1|sub), data = data2B,
+                prior = c(
+                  set_prior('normal(-0.2, 0.1)', coef = c('level1', 'level2', 'level3', 'level5')),
+                  set_prior('normal(-0.1, 0.1)', coef = c('level4', 'level7'))
+                ),
+                save_pars = save_pars(all = TRUE), iter = 20000, refresh = 0,
+                file = 'models/E3_alignment_2B')
+```
+
+```{r}
+plot(levels2B)
+print(summary(levels2B, robust = TRUE), digits = 4)
+```
+
+```{r}
+BF_2B_level <- bayes_factor(levels2B, levels2B_null)
+print(BF_2B_level)
+```
+
+There is strong evidence against an effect of level.
+
+```{r}
+emm_2B <- emmeans(levels2B, specs = "level")
+summary(emm_2B)
+```
+
+Above chance: 2, 5
+Below chance: 16
+All others at chance
+
+```{r}
+contrast(emm_2B, method = "pairwise")
+```
+
+1 > 16, 2 > 16, 3 > 16, 4 > 16, 5 > 16, 8 > 16
+
+2 > 3
+
+
+\newpage
+
+# 8B
+
+```{r}
+data8B <- filter(data, scramble == '8B')
+```
+
+```{r}
+levels8B_null <- brm(value ~ 1 + (1|sub), data = data8B,
+                     save_pars = save_pars(all = TRUE), 
+                     iter = 20000, refresh = 0,
+                     file = 'models/E3_alignment_8B_null')
+```
+
+```{r}
+plot(levels8B_null)
+print(summary(levels8B_null, robust = TRUE), digits = 4)
+```
+
+
+```{r}
+levels8B <- brm(value ~ level + (1|sub), data = data8B,
+                prior = c(
+                  set_prior('normal(-0.2, 0.1)', coef = c('level1', 'level2', 'level3', 'level5')),
+                  set_prior('normal(-0.1, 0.1)', coef = c('level4', 'level7'))
+                ),
+                save_pars = save_pars(all = TRUE), iter = 20000, refresh = 0,
+                file = 'models/E3_alignment_8B')
+```
+
+```{r}
+plot(levels8B)
+print(summary(levels8B, robust = TRUE), digits = 4)
+```
+
+```{r}
+BF_8B_level <- bayes_factor(levels8B, levels8B_null)
+print(BF_8B_level)
+```
+
+There is very strong evidence for an effect of level.
+
+```{r}
+emm_8B <- emmeans(levels8B, specs = "level")
+summary(emm_8B)
+```
+
+Above chance: 4, 8, 16
+At chance: 1, 2, 3, 5
+
+
+```{r}
+contrast(emm_8B, method = "pairwise")
+```
+
+2 > 3, 2 > 5 
+
+4 > 1, 4 > 2, 4 > 3, 4 > 5
+
+8 > 1, 8 > 2, 8 > 3, 8 > 4, 8 > 5, 8 > 16
+
+16 > 1, 16 > 3, 16 > 5
+
+Phrase level greater than all others. Structurally relevant levels (2,4,8,16) are consistently greater than structurally irrelevant levels (3,5), BUT participants align to longer SRL (4,8) more than 2 - consistent with lower rate of response
+
+\newpage
+
+# Intact
+
+```{r}
+dataI <- filter(data, scramble == 'Intact')
+```
+
+
+```{r}
+levelsI_null <- brm(value ~ 1 + (1|sub), data = dataI,
+                    save_pars = save_pars(all = TRUE), 
+                    iter = 20000, refresh = 0,
+                    file = 'models/E3_alignment_Intact_null')
+```
+
+```{r}
+plot(levelsI_null)
+print(summary(levelsI_null, robust = TRUE), digits = 4)
+```
+
+
+```{r}
+levelsI <- brm(value ~ level + (1|sub), data = dataI,
+               prior = c(
+                  set_prior('normal(-0.2, 0.1)', coef = c('level1', 'level2', 'level3', 'level5')),
+                  set_prior('normal(-0.1, 0.1)', coef = c('level4', 'level7'))
+                ),
+                save_pars = save_pars(all = TRUE), iter = 20000, refresh = 0,
+                file = 'models/E3_alignment_Intact')
+```
+
+```{r}
+plot(levelsI)
+print(summary(levelsI, robust = TRUE), digits = 4)
+```
+
+```{r}
+BF_I_level <- bayes_factor(levelsI, levelsI_null)
+print(BF_I_level)
+```
+
+There is strong evidence against an effect of level.
+
+```{r}
+emm_I <- emmeans(levelsI, specs = "level")
+summary(emm_I)
+```
+
+Only level above chance is 8-bar level.
+
+```{r}
+contrast(emm_I, method = "pairwise")
+```
+
+8 > 3, 8 > 4, 8 > 5
+
+\newpage
+
+# 8B vs Intact, 8 vs 16
+
+```{r}
+data_longTS <- data %>%
+  filter(scramble %in% c('Intact', '8B')) %>%
+  filter(level %in% c('8','16')) %>%
+  mutate(scramble = factor(scramble, levels = c('Intact','8B')),
+         level = factor(level, levels = c('8', '16'))) 
+```
+
+```{r}
+contrasts(data_longTS$level) <- contr.treatment(2)
+```
+
+```{r}
+data_longTS_M <- filter(data_longTS, Musician == 'Yes')
+data_longTS_NM <- filter(data_longTS, Musician == 'No')
+```
+
+
+```{r, include=FALSE}
+get_prior(value ~ scramble*level + (1|sub), data_longTS_M)
+```
+
+```{r}
+longTS_M <- brm(value ~ scramble + level + (1|sub), data = data_longTS_M,
+                prior = set_prior('normal(0, 0.1)', class = 'b'),
+                save_pars = save_pars(all = TRUE), iter = 20000, refresh = 0,
+                file = 'models/E3_alignment_longTimescales_mus')
+```
+
+```{r}
+plot(longTS_M)
+print(summary(longTS_M, robust = TRUE), digits = 4)
+```
+
+
+```{r}
+longTS_M_int <- brm(value ~ scramble*level + (1|sub), data = data_longTS_M,
+                prior = set_prior('normal(0, 0.1)', class = 'b'),
+                save_pars = save_pars(all = TRUE), iter = 20000, refresh = 0,
+                file = 'models/E3_alignment_longTimescales_musInt')
+```
+
+```{r}
+plot(longTS_M_int)
+print(summary(longTS_M_int, robust = TRUE), digits = 4)
+```
+
+```{r}
+BF_longM <- bayes_factor(longTS_M_int, longTS_M)
+print(BF_longM)
+```
+
+There is weak evidence for an interaction for musicians.
+
+\newpage
+
+```{r}
+longTS_NM <- brm(value ~ scramble + level + (1|sub), data = data_longTS_NM,
+                 prior = set_prior('normal(0, 0.1)', class = 'b'),
+                 save_pars = save_pars(all = TRUE), iter = 20000, refresh = 0,
+                 file = 'models/E3_alignment_longTimescales_nonmus')
+```
+
+```{r}
+plot(longTS_NM)
+print(summary(longTS_NM, robust = TRUE), digits = 4)
+```
+
+
+```{r}
+longTS_NM_int <- brm(value ~ scramble*level + (1|sub), data = data_longTS_NM,
+                     prior = set_prior('normal(0, 0.1)', class = 'b'),
+                     save_pars = save_pars(all = TRUE), 
+                     iter = 20000, refresh = 0,
+                     file = 'models/E3_alignment_longTimescales_nonmusInt')
+```
+
+```{r}
+plot(longTS_NM_int)
+print(summary(longTS_NM_int, robust = TRUE), digits = 4)
+```
+
+```{r}
+BF_longNM <- bayes_factor(longTS_NM_int, longTS_NM)
+print(BF_longNM)
+```
+
+There is weak evidence against an interaction for musicians.
