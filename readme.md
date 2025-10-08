@@ -1,4 +1,4 @@
-Welcome! The materials in this repo (plus all musical stimuli and fit brms models) are also on OSF here: https://osf.io/mej7a/
+Welcome! The materials in this repo (plus all musical stimuli) are also on OSF here: https://osf.io/mej7a/
 
 # Data
 
@@ -84,10 +84,6 @@ The `by_stimulus` folder includes one subfolder for each condition. Each subfold
 - rstatix 0.7.2
 - caret 6.0-94
 - reshape2 1.4.4
-
-## Models
-
-The `analysis/models/` contains all of the fit Bayesian models used in the analysis. brms will automatically load these models if it can find them. The .rds files are too big for GitHub, so they are only in the OSF repo.
 
 ## Analysis order
 
